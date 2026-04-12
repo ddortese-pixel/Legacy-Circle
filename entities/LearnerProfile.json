@@ -1,0 +1,133 @@
+{
+  "type": "object",
+  "properties": {
+    "display_name": {
+      "type": "string"
+    },
+    "age": {
+      "type": "number"
+    },
+    "age_mode": {
+      "type": "string",
+      "enum": [
+        "toddler",
+        "explorer",
+        "builder",
+        "leader"
+      ]
+    },
+    "chosen_guide": {
+      "type": "string",
+      "enum": [
+        "Justice",
+        "QJ",
+        "TJ",
+        "Lyric"
+      ]
+    },
+    "xp": {
+      "type": "number"
+    },
+    "shield_points": {
+      "type": "number"
+    },
+    "legacy_level": {
+      "type": "number"
+    },
+    "streak_days": {
+      "type": "number"
+    },
+    "last_active_date": {
+      "type": "string"
+    },
+    "badges_earned": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "equipped_frame": {
+      "type": "string"
+    },
+    "equipped_emoji": {
+      "type": "string"
+    },
+    "strengths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "growth_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "completed_missions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "story_choices": {
+      "type": "object"
+    },
+    "glow_moments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "parent_email": {
+      "type": "string"
+    },
+    "notify_level_up": {
+      "type": "boolean"
+    },
+    "notify_mission": {
+      "type": "boolean"
+    },
+    "notify_badge": {
+      "type": "boolean"
+    },
+    "notify_streak": {
+      "type": "boolean"
+    },
+    "daily_limit_minutes": {
+      "type": "number"
+    },
+    "mission_boost_expiry": {
+      "type": "string"
+    },
+    "classroom_code": {
+      "type": "string"
+    },
+    "grade_band": {
+      "type": "string",
+      "enum": [
+        "PreK-K",
+        "1-2",
+        "3-4",
+        "5-6",
+        "7-8"
+      ]
+    },
+    "consent_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "denied"
+      ]
+    },
+    "consent_token": {
+      "type": "string"
+    },
+    "indiana_standards_progress": {
+      "type": "object"
+    }
+  },
+  "required": [],
+  "name": "LearnerProfile"
+}

@@ -1,0 +1,71 @@
+{
+  "type": "object",
+  "properties": {
+    "author_email": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_avatar": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "video_url": {
+      "type": "string"
+    },
+    "likes_count": {
+      "type": "number"
+    },
+    "liked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "comments_count": {
+      "type": "number"
+    },
+    "post_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "image",
+        "video",
+        "blog",
+        "series"
+      ]
+    },
+    "is_ai_generated": {
+      "type": "boolean"
+    },
+    "is_unfiltered": {
+      "type": "boolean"
+    },
+    "series_id": {
+      "type": "string"
+    },
+    "episode_number": {
+      "type": "number"
+    },
+    "viewed_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "searchable_text": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "Post"
+}

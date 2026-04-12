@@ -1,0 +1,52 @@
+{
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "app": {
+      "type": "string",
+      "enum": [
+        "OurSpace 2.0",
+        "The Legacy Circle",
+        "Both"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "warning",
+        "error",
+        "fixed",
+        "admin_required"
+      ]
+    },
+    "check_name": {
+      "type": "string"
+    },
+    "details": {
+      "type": "string"
+    },
+    "auto_fixed": {
+      "type": "boolean"
+    },
+    "fix_description": {
+      "type": "string"
+    },
+    "admin_notified": {
+      "type": "boolean"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    }
+  },
+  "required": [],
+  "name": "DiagnosticLog"
+}

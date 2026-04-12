@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "profile_email": {
+      "type": "string"
+    },
+    "author_email": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_avatar": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "WallPost"
+}

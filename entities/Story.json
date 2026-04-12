@@ -1,0 +1,56 @@
+{
+  "type": "object",
+  "properties": {
+    "author_email": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_avatar": {
+      "type": "string"
+    },
+    "media_url": {
+      "type": "string"
+    },
+    "media_type": {
+      "type": "string",
+      "enum": [
+        "image",
+        "video"
+      ]
+    },
+    "caption": {
+      "type": "string"
+    },
+    "text_overlay": {
+      "type": "string"
+    },
+    "sticker_emojis": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "music_title": {
+      "type": "string"
+    },
+    "views": {
+      "type": "number"
+    },
+    "expires_at": {
+      "type": "string"
+    },
+    "poll_question": {
+      "type": "string"
+    },
+    "poll_options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [],
+  "name": "Story"
+}

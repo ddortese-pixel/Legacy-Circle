@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_profile_id": {
+      "type": "string"
+    },
+    "item_id": {
+      "type": "string"
+    },
+    "item_title": {
+      "type": "string"
+    },
+    "item_type": {
+      "type": "string"
+    },
+    "landmark_id": {
+      "type": "string"
+    },
+    "challenge_id": {
+      "type": "string"
+    },
+    "unlocked_by": {
+      "type": "string"
+    },
+    "content_url": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "historical_context": {
+      "type": "string"
+    },
+    "voice_note_url": {
+      "type": "string"
+    },
+    "unlocked_date": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "UnlockedMuseumItem"
+}

@@ -1,0 +1,49 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_profile_id": {
+      "type": "string"
+    },
+    "character": {
+      "type": "string",
+      "enum": [
+        "Justice",
+        "QJ",
+        "TJ",
+        "Lyric"
+      ]
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "interview_type": {
+      "type": "string"
+    },
+    "user_questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "character_responses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "story_impact": {
+      "type": "string"
+    },
+    "unlocked_content": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "xp_earned": {
+      "type": "number"
+    }
+  },
+  "required": [],
+  "name": "CharacterInterview"
+}

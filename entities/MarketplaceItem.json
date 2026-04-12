@@ -1,0 +1,60 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "avatar_frame",
+        "theme",
+        "sticker_pack",
+        "badge",
+        "character_skin",
+        "emoji_pack"
+      ]
+    },
+    "cost_type": {
+      "type": "string",
+      "enum": [
+        "xp",
+        "usd",
+        "free"
+      ]
+    },
+    "cost": {
+      "type": "number"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "character_affinity": {
+      "type": "string",
+      "enum": [
+        "Justice",
+        "QJ",
+        "TJ",
+        "Lyric",
+        "All"
+      ]
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ]
+    },
+    "required_level": {
+      "type": "number"
+    }
+  },
+  "required": [],
+  "name": "MarketplaceItem"
+}

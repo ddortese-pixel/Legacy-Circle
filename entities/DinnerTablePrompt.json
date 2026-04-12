@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_profile_id": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    },
+    "completed_missions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "prompts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "xp_earned_today": {
+      "type": "number"
+    },
+    "story_themes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sent": {
+      "type": "boolean"
+    }
+  },
+  "required": [],
+  "name": "DinnerTablePrompt"
+}

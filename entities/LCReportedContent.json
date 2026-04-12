@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "reporter_email": {
+      "type": "string"
+    },
+    "reported_user_email": {
+      "type": "string"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "message",
+        "profile",
+        "story_reply",
+        "glow_message"
+      ]
+    },
+    "content_id": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "inappropriate",
+        "bullying",
+        "spam",
+        "csam",
+        "other"
+      ]
+    },
+    "details": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "actioned",
+        "dismissed"
+      ]
+    },
+    "moderator_notes": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "LCReportedContent"
+}

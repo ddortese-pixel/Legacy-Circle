@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_profile_id": {
+      "type": "string"
+    },
+    "character": {
+      "type": "string",
+      "enum": [
+        "Justice",
+        "QJ",
+        "TJ",
+        "Lyric"
+      ]
+    },
+    "story_id": {
+      "type": "string"
+    },
+    "score": {
+      "type": "number"
+    },
+    "total_questions": {
+      "type": "number"
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "xp_earned": {
+      "type": "number"
+    },
+    "competency_mastered": {
+      "type": "string"
+    },
+    "attempts": {
+      "type": "number"
+    }
+  },
+  "required": [],
+  "name": "MasteryQuiz"
+}

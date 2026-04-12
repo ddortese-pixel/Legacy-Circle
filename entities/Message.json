@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "sender_email": {
+      "type": "string"
+    },
+    "receiver_email": {
+      "type": "string"
+    },
+    "sender_name": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "is_read": {
+      "type": "boolean"
+    },
+    "conversation_id": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "Message"
+}

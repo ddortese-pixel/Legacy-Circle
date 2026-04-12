@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_profile_id": {
+      "type": "string"
+    },
+    "mission_date": {
+      "type": "string"
+    },
+    "character": {
+      "type": "string",
+      "enum": [
+        "Justice",
+        "QJ",
+        "TJ",
+        "Lyric"
+      ]
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "completed_count": {
+      "type": "number"
+    },
+    "xp_earned": {
+      "type": "number"
+    },
+    "intention": {
+      "type": "string"
+    },
+    "intention_completed": {
+      "type": "boolean"
+    }
+  },
+  "required": [],
+  "name": "DailyMission"
+}

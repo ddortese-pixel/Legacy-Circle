@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_profile_id": {
+      "type": "string"
+    },
+    "week_key": {
+      "type": "string"
+    },
+    "completed_tasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "badge_earned": {
+      "type": "string"
+    },
+    "xp_multiplier_active": {
+      "type": "boolean"
+    },
+    "xp_multiplier_expiry": {
+      "type": "string"
+    },
+    "xp_bonus_awarded": {
+      "type": "boolean"
+    }
+  },
+  "required": [],
+  "name": "WeeklyChallenge"
+}

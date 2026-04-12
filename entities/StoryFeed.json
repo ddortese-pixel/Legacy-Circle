@@ -1,0 +1,48 @@
+{
+  "type": "object",
+  "properties": {
+    "author_profile_id": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "character_voice": {
+      "type": "string",
+      "enum": [
+        "Justice",
+        "QJ",
+        "TJ",
+        "Lyric"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "theme": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ]
+    },
+    "reactions": {
+      "type": "object"
+    },
+    "replies_count": {
+      "type": "number"
+    },
+    "featured": {
+      "type": "boolean"
+    }
+  },
+  "required": [],
+  "name": "StoryFeed"
+}

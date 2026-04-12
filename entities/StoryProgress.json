@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_profile_id": {
+      "type": "string"
+    },
+    "episode_id": {
+      "type": "string"
+    },
+    "character": {
+      "type": "string",
+      "enum": [
+        "Justice",
+        "QJ",
+        "TJ",
+        "Lyric"
+      ]
+    },
+    "choices_made": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "completed": {
+      "type": "boolean"
+    },
+    "glow_moment_reached": {
+      "type": "boolean"
+    },
+    "xp_earned": {
+      "type": "number"
+    },
+    "shield_points_earned": {
+      "type": "number"
+    }
+  },
+  "required": [],
+  "name": "StoryProgress"
+}

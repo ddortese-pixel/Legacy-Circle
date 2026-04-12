@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "product_type": {
+      "type": "string",
+      "enum": [
+        "subscription",
+        "printable",
+        "digital_book",
+        "classroom_pack",
+        "merchandise"
+      ]
+    },
+    "price_usd": {
+      "type": "number"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "file_url": {
+      "type": "string"
+    },
+    "preview_url": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "featured": {
+      "type": "boolean"
+    },
+    "available": {
+      "type": "boolean"
+    },
+    "coming_soon": {
+      "type": "boolean"
+    },
+    "sort_order": {
+      "type": "number"
+    }
+  },
+  "required": [],
+  "name": "StoreProduct"
+}

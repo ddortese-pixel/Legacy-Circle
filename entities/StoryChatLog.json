@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_profile_id": {
+      "type": "string"
+    },
+    "learner_name": {
+      "type": "string"
+    },
+    "character": {
+      "type": "string",
+      "enum": [
+        "Justice",
+        "QJ",
+        "TJ",
+        "Lyric"
+      ]
+    },
+    "story_title": {
+      "type": "string"
+    },
+    "scene_index": {
+      "type": "number"
+    },
+    "question": {
+      "type": "string"
+    },
+    "hint_response": {
+      "type": "string"
+    },
+    "theme": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "StoryChatLog"
+}

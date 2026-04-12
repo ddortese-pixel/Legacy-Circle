@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "from_email": {
+      "type": "string"
+    },
+    "from_name": {
+      "type": "string"
+    },
+    "from_avatar": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "like",
+        "comment",
+        "friend_request",
+        "mention",
+        "wall_post"
+      ]
+    },
+    "reference_id": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "is_read": {
+      "type": "boolean"
+    }
+  },
+  "required": [],
+  "name": "Notification"
+}

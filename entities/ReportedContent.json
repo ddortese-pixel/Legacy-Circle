@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "properties": {
+    "reporter_email": {
+      "type": "string"
+    },
+    "reported_user_email": {
+      "type": "string"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "comment",
+        "profile",
+        "message",
+        "reel",
+        "story"
+      ]
+    },
+    "content_id": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "spam",
+        "harassment",
+        "hate_speech",
+        "violence",
+        "sexual_content",
+        "fake_account",
+        "ai_mislabeled",
+        "other"
+      ]
+    },
+    "details": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "actioned",
+        "dismissed"
+      ]
+    },
+    "moderator_notes": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "ReportedContent"
+}

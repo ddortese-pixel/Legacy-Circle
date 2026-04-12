@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "properties": {
+    "recipient_email": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "emoji": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "achievement",
+        "challenge",
+        "glow",
+        "system",
+        "event",
+        "mission",
+        "level_up",
+        "streak"
+      ]
+    },
+    "action_path": {
+      "type": "string"
+    },
+    "read": {
+      "type": "boolean"
+    },
+    "target_profile_id": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "AppNotification"
+}

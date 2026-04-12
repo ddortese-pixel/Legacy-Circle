@@ -1,0 +1,77 @@
+{
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "cover_photo": {
+      "type": "string"
+    },
+    "headline": {
+      "type": "string"
+    },
+    "about_me": {
+      "type": "string"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hobbies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mood": {
+      "type": "string"
+    },
+    "song_playing": {
+      "type": "string"
+    },
+    "background_gradient": {
+      "type": "string",
+      "enum": [
+        "purple-pink",
+        "orange-red",
+        "green-teal",
+        "blue-cyan",
+        "teal-blue",
+        "default"
+      ]
+    },
+    "theme_color": {
+      "type": "string"
+    },
+    "avatar_emoji": {
+      "type": "string"
+    },
+    "profile_views": {
+      "type": "number"
+    },
+    "is_online": {
+      "type": "boolean"
+    },
+    "privacy_level": {
+      "type": "string",
+      "enum": [
+        "public",
+        "friends",
+        "private"
+      ]
+    },
+    "social_links": {
+      "type": "object"
+    }
+  },
+  "required": [],
+  "name": "Profile"
+}

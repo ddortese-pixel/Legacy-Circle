@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_profile_id": {
+      "type": "string"
+    },
+    "item_id": {
+      "type": "string"
+    },
+    "item_name": {
+      "type": "string"
+    },
+    "item_category": {
+      "type": "string"
+    },
+    "equipped": {
+      "type": "boolean"
+    }
+  },
+  "required": [],
+  "name": "PurchasedItem"
+}

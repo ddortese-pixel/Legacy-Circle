@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "properties": {
+    "requester_email": {
+      "type": "string"
+    },
+    "receiver_email": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "blocked"
+      ]
+    },
+    "requester_name": {
+      "type": "string"
+    },
+    "receiver_name": {
+      "type": "string"
+    },
+    "requester_avatar": {
+      "type": "string"
+    },
+    "receiver_avatar": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "Friend"
+}

@@ -1,0 +1,46 @@
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "emoji": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": "string"
+    },
+    "end_date": {
+      "type": "string"
+    },
+    "goal_total": {
+      "type": "number"
+    },
+    "current_progress": {
+      "type": "number"
+    },
+    "reward_item_name": {
+      "type": "string"
+    },
+    "reward_emoji": {
+      "type": "string"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "active": {
+      "type": "boolean"
+    }
+  },
+  "required": [],
+  "name": "SeasonalEvent"
+}
