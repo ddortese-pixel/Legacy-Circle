@@ -13,7 +13,6 @@ Deno.serve(async (req) => {
       { name: "OurSpace 2.0", measurementId: "G-1N8GD2WM6L", emoji: "🌐" },
     ];
 
-    const appUrl = "https://legacy-circle.base44.app";
     const today = new Date();
     const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
     const fmt = (d: Date) => d.toISOString().split("T")[0];
@@ -98,31 +97,39 @@ Deno.serve(async (req) => {
       appSections.push(section);
     }
 
-    // Search Console data (shared domain)
+    // Search Console data — check all three URLs
     let gscSection = "⚠️ Search Console data not yet available (site verification may be pending)";
-    const gscRes = await fetch(
-      `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(appUrl)}/searchAnalytics/query`,
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${gscToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          startDate: fmt(weekAgo),
-          endDate: fmt(today),
-          dimensions: ["query"],
-          rowLimit: 10,
-        }),
-      }
-    );
-    const gscData = await gscRes.json();
 
-    if (gscData?.rows?.length > 0) {
-      const topKeywords = gscData.rows.slice(0, 8).map((row: any) =>
-        `  • "${row.keys[0]}" — ${row.clicks} clicks, ${row.impressions} impressions`
-      ).join("\n");
-      gscSection = `🔍 TOP GOOGLE SEARCH KEYWORDS (both apps)\n${topKeywords}`;
+    for (const siteUrl of [
+      "https://our-space-vibes.base44.app",
+      "https://the-legacy-circle-59ad81c4.base44.app",
+      "https://legacycirclewebpage.base44.app",
+    ]) {
+      const gscRes = await fetch(
+        `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${gscToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            startDate: fmt(weekAgo),
+            endDate: fmt(today),
+            dimensions: ["query"],
+            rowLimit: 10,
+          }),
+        }
+      );
+      const gscData = await gscRes.json();
+
+      if (gscData?.rows?.length > 0) {
+        const topKeywords = gscData.rows.slice(0, 8).map((row: any) =>
+          `  • "${row.keys[0]}" — ${row.clicks} clicks, ${row.impressions} impressions`
+        ).join("\n");
+        gscSection = `🔍 TOP GOOGLE SEARCH KEYWORDS\n${topKeywords}`;
+        break;
+      }
     }
 
-    const emailBody = `Hey Dixson! Here's your weekly performance report for both apps 👇
+    const emailBody = `Hey Dixson! Here's your weekly performance report for all apps 👇
 
 📅 Week of ${fmt(weekAgo)} → ${fmt(today)}
 ${"─".repeat(40)}
@@ -133,8 +140,9 @@ ${"─".repeat(40)}
 ${gscSection}
 
 ${"─".repeat(40)}
-🔗 Legacy Circle: https://legacy-circle.base44.app/SplashScreen
-🔗 OurSpace 2.0: https://legacy-circle.base44.app/Home
+🔗 The Legacy Circle (App): https://the-legacy-circle-59ad81c4.base44.app/LCSplashScreen
+🔗 Legacy Circle Webpage: https://legacycirclewebpage.base44.app
+🔗 OurSpace 2.0: https://our-space-vibes.base44.app
 
 Keep building — talk soon! 🚀`;
 
@@ -157,4 +165,4 @@ Keep building — talk soon! 🚀`;
   } catch (err: any) {
     return Response.json({ error: err.message }, { status: 500 });
   }
-}
+});
