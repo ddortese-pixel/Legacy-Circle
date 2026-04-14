@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const APP_NAME = "OurSpace 2.0";
-const APP_URL = "https://legacy-circle.base44.app";
+const APP_URL = "https://our-space-vibes.base44.app";
 const GMAIL_SENDER = "ddortese@gmail.com";
 
 Deno.serve(async (req) => {
