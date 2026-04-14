@@ -1,7 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const ADMIN_EMAIL = "ddortese@gmail.com";
-const APP_URL = "https://legacy-circle.base44.app";
+const APP_URL = "https://the-legacy-circle-59ad81c4.base44.app";
+const WEBPAGE_URL = "https://legacycirclewebpage.base44.app";
 
 const PAGES_TO_CHECK = [
   { name: "LCSplashScreen",    url: `${APP_URL}/LCSplashScreen` },
@@ -15,6 +16,7 @@ const PAGES_TO_CHECK = [
   { name: "LCTermsOfService", url: `${APP_URL}/LCTermsOfService` },
   { name: "LCReportContent",  url: `${APP_URL}/LCReportContent` },
   { name: "LaunchTracker",    url: `${APP_URL}/LaunchTracker` },
+  { name: "LC Webpage",       url: WEBPAGE_URL },
 ];
 
 const ENTITIES_TO_CHECK = [
@@ -150,7 +152,8 @@ Deno.serve(async (req) => {
           ``,
           `⚠️ Warnings: ${warnings.length}  ✅ Passed: ${passed.length}`,
           ``,
-          `Dashboard: ${APP_URL}/DiagnosticDashboard`,
+          `App: ${APP_URL}/DiagnosticDashboard`,
+          `Webpage: ${WEBPAGE_URL}`,
           ``,
           `⚠️ If any CSAM reports are listed above, report immediately to:`,
           `NCMEC CyberTipline: https://www.missingkids.org/gethelpnow/cybertipline`,
