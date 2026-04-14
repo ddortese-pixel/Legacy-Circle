@@ -208,6 +208,17 @@ export default function LCHome() {
           ))}
         </div>
 
+
+        {/* J'Mell Dowdell Tribute Banner */}
+        <div onClick={() => navigate("/LCTribute")} style={{ background: "linear-gradient(135deg, #1a1200, #1a1e35)", borderRadius: 14, border: "1px solid #ffc40035", padding: "14px 18px", marginBottom: 14, cursor: "pointer", display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{ fontSize: 32 }}>🕊️</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 900, color: "#ffc400" }}>Built in Honor of J'Mell Dowdell</div>
+            <div style={{ fontSize: 11, color: "#9ea3c0", marginTop: 2, lineHeight: 1.5 }}>Every story. Every mission. Every Glow. For J'Mell. For Indianapolis. 💛</div>
+          </div>
+          <div style={{ fontSize: 16, color: "#ffc400" }}>›</div>
+        </div>
+
         {/* Compliance footer */}
         <div style={{ background: T.card, borderRadius: 12, padding: "12px 16px", border: `1px solid ${T.border}`, textAlign: "center" }}>
           <div style={{ fontSize: 11, color: T.muted }}>🔒 COPPA · FERPA · GDPR-K · Indiana HB 1052 · No Ads · No Data Sales</div>
