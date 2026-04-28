@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LearnerProfile } from "@/api/entities";
+import { SEND_PARENT_VERIFICATION_URL } from "../functionUrls";
+import { usePageMeta, LEGACY_CIRCLE_ICON } from "./usePageMeta";
 
 const LC_ICON = "https://media.base44.com/images/public/69cdc0f4895939ce59ad81c4/3508b8e9c_1774579448257.png";
 
@@ -47,6 +49,13 @@ export default function LCOnboarding() {
   const ageData   = AGE_GROUPS.find(a => a.value === ageGroup);
   const ageNum    = ageGroup ? parseInt(ageGroup.split("-")[0]) : 0;
 
+  usePageMeta({
+    title: "Onboarding · The Legacy Circle",
+    description: "Choose an age band, select a Legacy Guide, and start a mission-driven SEL journey with Legacy Circle.",
+    keywords: "Legacy Circle onboarding, choose guide, SEL onboarding",
+    icon: LEGACY_CIRCLE_ICON,
+  });
+
   async function finish() {
     if (!agreed) { setError("Please accept the consent statement to continue."); return; }
     if (ageNum < 13 && !parentEmail) { setError("Parent/guardian email required for ages 2–12."); return; }
@@ -57,7 +66,7 @@ export default function LCOnboarding() {
     // Fire parental verification if under 13
     if (ageNum < 13 && parentEmail) {
       try {
-        await fetch("https://legacy-circle-ae3f9932.base44.app/functions/sendParentVerification", {
+        await fetch(SEND_PARENT_VERIFICATION_URL, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ childName: name, childEmail: email, parentEmail, appName: "The Legacy Circle" }),
         });

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePageMeta } from "./usePageMeta";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 
@@ -26,6 +27,12 @@ export default function LCGuardian() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+
+  usePageMeta({
+    title: "Guardian Vault · The Legacy Circle",
+    description: "Guardian Vault gives parents and guardians access to learner settings, safety controls, progress snapshots, and compliance information.",
+    keywords: "Guardian Vault, parent dashboard, COPPA, Legacy Circle guardian",
+  });
 
   function save() {
     setSaving(true);

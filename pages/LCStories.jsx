@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { StoryProgress, LearnerProfile } from "@/api/entities";
+import LCSponsorSpotlight from "./LCSponsorSpotlight";
+import { usePageMeta } from "./usePageMeta";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 const NAV = [
@@ -117,6 +119,12 @@ export default function LCStories() {
   const character = localStorage.getItem("lc_character") || "Justice";
   const filtered  = filter === "All" ? STORIES : STORIES.filter(s => s.character === filter);
   const completedStories = JSON.parse(localStorage.getItem("lc_completed_stories") || "[]");
+
+  usePageMeta({
+    title: "Stories · The Legacy Circle",
+    description: "Explore Legacy Circle story episodes that teach empathy, digital literacy, leadership, and creativity through guided choices.",
+    keywords: "Legacy Circle stories, SEL stories, digital literacy stories, character education",
+  });
 
   function start(story) { setActive(story); setScene(0); setChoices([]); setDone(false); setSelected(null); }
 
@@ -286,6 +294,8 @@ export default function LCStories() {
       </div>
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "18px 16px" }}>
+        <LCSponsorSpotlight app="legacy_circle" placement="stories" />
+
         {/* Filter tabs */}
         <div style={{ display: "flex", gap: 8, marginBottom: 18, flexWrap: "wrap" }}>
           {["All","Justice","QJ","TJ","Lyric"].map(f => (

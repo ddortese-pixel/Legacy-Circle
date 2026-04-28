@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { usePageMeta } from "./usePageMeta";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 
@@ -117,7 +118,7 @@ If you disagree with any changes, you may delete your account at any time.` },
   { title: "15. Contact Us", body: `Legacy Circle LLC
 Indianapolis, Indiana, USA
 📧 ddortese@gmail.com
-🌐 https://legacycircle.app
+🌐 https://legacycirclewwebsite.base44.app
 
 For COPPA compliance: ddortese@gmail.com
 To report CSAM: NCMEC CyberTipline 1-800-843-5678 or missingkids.org
@@ -126,6 +127,12 @@ For FERPA questions: studentprivacy.ed.gov` },
 
 export default function LCTermsOfService() {
   const navigate = useNavigate();
+
+  usePageMeta({
+    title: "Terms of Service · The Legacy Circle",
+    description: "Read the Terms of Service for Legacy Circle, including age requirements, acceptable use, parental consent, and classroom protections.",
+    keywords: "Legacy Circle terms, terms of service, parental consent, classroom use",
+  });
 
   return (
     <div style={{ fontFamily: "sans-serif", minHeight: "100vh", background: T.bg, color: T.text, paddingBottom: 60 }}>

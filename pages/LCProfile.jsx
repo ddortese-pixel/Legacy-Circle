@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LCSponsorSpotlight from "./LCSponsorSpotlight";
+import { usePageMeta } from "./usePageMeta";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 const NAV = [
@@ -21,7 +23,7 @@ const FRAMES = ["🌟","🔥","🌈","🎯","🏆","⭐","💎","🌺","🌙","�
 
 export default function LCProfile() {
   const navigate = useNavigate();
-  const name        = localStorage.getItem("lc_name") || "Legacy Leader";
+  const [name, setName] = useState(() => localStorage.getItem("lc_name") || "Legacy Leader");
   const character   = localStorage.getItem("lc_character") || "Justice";
   const ageGroup    = localStorage.getItem("lc_age_group") || "8-10";
   const parentEmail = localStorage.getItem("lc_parent_email") || "";
@@ -37,10 +39,18 @@ export default function LCProfile() {
   const [equippedFrame, setEquippedFrame] = useState(localStorage.getItem("lc_frame") || "🌟");
   const [showFrames, setShowFrames] = useState(false);
 
+  usePageMeta({
+    title: "Profile · The Legacy Circle",
+    description: "View learner stats, earned XP, chosen guide, family information, and account links in the Legacy Circle profile.",
+    keywords: "Legacy Circle profile, learner profile, XP, character guide",
+  });
+
   function saveName() {
-    localStorage.setItem("lc_name", newName);
+    const nextName = newName.trim() || "Legacy Leader";
+    localStorage.setItem("lc_name", nextName);
+    setName(nextName);
+    setNewName(nextName);
     setEditing(false);
-    window.location.reload();
   }
 
   function equipFrame(f) {
@@ -66,6 +76,8 @@ export default function LCProfile() {
       </div>
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "22px 16px" }}>
+        <LCSponsorSpotlight app="legacy_circle" placement="profile" />
+
         {/* Avatar card */}
         <div style={{ background: T.card, borderRadius: 22, padding: "30px 20px", marginBottom: 20, textAlign: "center", border: `1px solid ${guide.color}30`, boxShadow: `0 4px 28px ${guide.color}12` }}>
           <div style={{ position: "relative", width: 90, height: 90, margin: "0 auto 16px" }}>

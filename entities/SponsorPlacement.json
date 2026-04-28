@@ -1,0 +1,71 @@
+{
+  "type": "object",
+  "properties": {
+    "sponsor_name": {
+      "type": "string"
+    },
+    "sponsor_tagline": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "cta_text": {
+      "type": "string"
+    },
+    "cta_url": {
+      "type": "string"
+    },
+    "target_app": {
+      "type": "string",
+      "enum": [
+        "legacy_circle",
+        "ourspace",
+        "both"
+      ]
+    },
+    "placement": {
+      "type": "string",
+      "enum": [
+        "global",
+        "home",
+        "feed",
+        "discover",
+        "stories",
+        "missions",
+        "progress",
+        "profile",
+        "marketplace"
+      ]
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "priority": {
+      "type": "number"
+    },
+    "starts_at": {
+      "type": "string"
+    },
+    "ends_at": {
+      "type": "string"
+    },
+    "disclosure": {
+      "type": "string"
+    },
+    "age_safe": {
+      "type": "boolean"
+    },
+    "impressions_count": {
+      "type": "number"
+    },
+    "clicks_count": {
+      "type": "number"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [],
+  "name": "SponsorPlacement"
+}

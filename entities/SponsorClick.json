@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "properties": {
+    "sponsor_placement_id": {
+      "type": "string"
+    },
+    "target_app": {
+      "type": "string",
+      "enum": [
+        "legacy_circle",
+        "ourspace",
+        "both"
+      ]
+    },
+    "placement": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "referrer": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "SponsorClick"
+}

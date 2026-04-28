@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { LearnerProfile } from "@/api/entities";
+import LCSponsorSpotlight from "./LCSponsorSpotlight";
+import { usePageMeta } from "./usePageMeta";
 
 const GA_ID = "G-HEWR0ZB5G8";
 const LC_ICON = "https://media.base44.com/images/public/69cdc0f4895939ce59ad81c4/3508b8e9c_1774579448257.png";
@@ -34,6 +36,15 @@ const QUICK_TASKS = [
   { id: "move",  emoji: "⚡", label: "Daily Mission",        desc: "Complete today's intention",      xp: 20 },
 ];
 
+const EXPLORE_CARDS = [
+  { emoji: "📖", label: "Story Mode",      desc: "Character-guided adventures",  path: "/LCStories",  color: "#ef4444" },
+  { emoji: "🧠", label: "Knowledge Shield", desc: "Quizzes & mastery challenges", path: "/LCProgress", color: "#3b82f6" },
+  { emoji: "✨", label: "Glow Mentorship",  desc: "Send encouragement +10 XP",    path: "/LCGlows",    color: "#06b6d4" },
+  { emoji: "⚡", label: "Daily Missions",   desc: "Character-based daily tasks",  path: "/LCMissions", color: "#f97316" },
+  { emoji: "👨‍👩‍👧", label: "Guardian Vault",  desc: "Parent dashboard & controls",  path: "/LCGuardian", color: "#a855f7" },
+  { emoji: "🏆", label: "Legacy Progress",  desc: "Badges, levels & standards",   path: "/LCProgress", color: "#ffc400" },
+];
+
 const NAV = [
   { icon: "🏠", label: "Home",     path: "/LCHome"     },
   { icon: "📖", label: "Stories",  path: "/LCStories"  },
@@ -46,37 +57,45 @@ export default function LCHome() {
   const navigate = useNavigate();
   const name      = localStorage.getItem("lc_name") || "Legacy Leader";
   const character = localStorage.getItem("lc_character") || "Justice";
-  const xp        = parseInt(localStorage.getItem("lc_xp") || "0");
-  const streak    = parseInt(localStorage.getItem("lc_streak") || "1");
+  const [xp, setXp] = useState(() => parseInt(localStorage.getItem("lc_xp") || "0"));
+  const [streak, setStreak] = useState(() => parseInt(localStorage.getItem("lc_streak") || "1"));
+  const [doneToday, setDoneToday] = useState(() => JSON.parse(localStorage.getItem("lc_done_today") || "[]"));
   const level     = Math.floor(xp / 100) + 1;
   const xpProg    = xp % 100;
   const guide     = GUIDES[character] || GUIDES.Justice;
   const today     = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
-  const doneToday = JSON.parse(localStorage.getItem("lc_done_today") || "[]");
+  const doneSet = useMemo(() => new Set(doneToday), [doneToday]);
+
+  usePageMeta({
+    title: "Home · The Legacy Circle",
+    description: "Track XP, missions, stories, Glow mentorship, and character progress on the Legacy Circle learner dashboard.",
+    keywords: "Legacy Circle home, XP dashboard, student progress, SEL missions",
+    icon: LC_ICON,
+  });
 
   useEffect(() => {
     injectGA();
-    let link = document.querySelector("link[rel~='icon']");
-    if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
-    link.href = LC_ICON;
-    document.title = "The Legacy Circle";
     if (!localStorage.getItem("lc_profile_id")) navigate("/LCOnboarding");
     // Reset daily tasks if new day
     const lastDay = localStorage.getItem("lc_last_active");
     if (lastDay !== new Date().toDateString()) {
       localStorage.setItem("lc_done_today", "[]");
+      setDoneToday([]);
       localStorage.setItem("lc_last_active", new Date().toDateString());
       const s = parseInt(localStorage.getItem("lc_streak") || "1");
       localStorage.setItem("lc_streak", s + 1);
+      setStreak(s + 1);
     }
   }, []);
 
   async function markDone(taskId, xpAmt) {
-    if (doneToday.includes(taskId)) return;
+    if (doneSet.has(taskId)) return;
     const updated = [...doneToday, taskId];
     localStorage.setItem("lc_done_today", JSON.stringify(updated));
-    const newXp = parseInt(localStorage.getItem("lc_xp") || "0") + xpAmt;
+    setDoneToday(updated);
+    const newXp = xp + xpAmt;
     localStorage.setItem("lc_xp", newXp);
+    setXp(newXp);
     // Sync to DB
     try {
       const dbId = localStorage.getItem("lc_db_id");
@@ -88,7 +107,6 @@ export default function LCHome() {
         });
       }
     } catch(e) { console.warn("DB sync failed:", e); }
-    window.location.reload();
   }
 
   return (
@@ -161,7 +179,7 @@ export default function LCHome() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {QUICK_TASKS.map(task => {
-              const done = doneToday.includes(task.id);
+              const done = doneSet.has(task.id);
               return (
                 <div key={task.id} onClick={() => !done && markDone(task.id, task.xp)} style={{
                   background: done ? "#0c1a0c" : T.card, border: `1px solid ${done ? "#22c55e30" : T.border}`,
@@ -189,14 +207,7 @@ export default function LCHome() {
         {/* Explore grid */}
         <div style={{ fontSize: 13, color: T.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 }}>Explore</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 22 }}>
-          {[
-            { emoji: "📖", label: "Story Mode",      desc: "Character-guided adventures",  path: "/LCStories",  color: "#ef4444" },
-            { emoji: "🧠", label: "Knowledge Shield", desc: "Quizzes & mastery challenges", path: "/LCProgress", color: "#3b82f6" },
-            { emoji: "✨", label: "Glow Mentorship",  desc: "Send encouragement +10 XP",    path: "/LCGlows",    color: "#06b6d4" },
-            { emoji: "⚡", label: "Daily Missions",   desc: "Character-based daily tasks",  path: "/LCMissions", color: "#f97316" },
-            { emoji: "👨‍👩‍👧", label: "Guardian Vault",  desc: "Parent dashboard & controls",  path: "/LCGuardian", color: "#a855f7" },
-            { emoji: "🏆", label: "Legacy Progress",  desc: "Badges, levels & standards",   path: "/LCProgress", color: "#ffc400" },
-          ].map(card => (
+          {EXPLORE_CARDS.map(card => (
             <div key={card.label} onClick={() => navigate(card.path)} style={{
               background: T.card, borderLeft: `3px solid ${card.color}`,
               border: `1px solid ${card.color}25`, borderRadius: 16, padding: "16px 14px", cursor: "pointer",
@@ -207,6 +218,8 @@ export default function LCHome() {
             </div>
           ))}
         </div>
+
+        <LCSponsorSpotlight app="legacy_circle" placement="home" />
 
 
         {/* J'Mell Dowdell Tribute Banner */}

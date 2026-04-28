@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePageMeta } from "./usePageMeta";
 
 const apps = [
   {
@@ -144,6 +145,12 @@ export default function AppStoreReadiness() {
     return { label: "Getting Started 🌱", color: "#94a3b8" };
   };
   const status = getStatus();
+
+  usePageMeta({
+    title: "App Store Readiness · The Legacy Circle",
+    description: "Review app store launch readiness, legal assets, and mobile milestones for Legacy Circle and related products.",
+    keywords: "app store readiness, Legacy Circle launch, mobile launch checklist",
+  });
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a14", color: "#f0f0f0", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>

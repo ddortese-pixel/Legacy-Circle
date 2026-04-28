@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { LearnerProfile, StoryProgress, MasteryQuiz } from "@/api/entities";
+import { usePageMeta } from "./usePageMeta";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 
@@ -32,6 +33,12 @@ export default function LCTeacherDashboard() {
   const [selected, setSelected]   = useState(null);
   const [tab, setTab]             = useState("overview");
   const [search, setSearch]       = useState("");
+
+  usePageMeta({
+    title: "Teacher Dashboard · The Legacy Circle",
+    description: "Authorized educators can review classroom progress, learner activity, and standards alignment in the Legacy Circle teacher dashboard.",
+    keywords: "Legacy Circle teacher dashboard, classroom analytics, FERPA, educator portal",
+  });
 
   // Simple teacher PIN — in production this would be a real auth system
   const TEACHER_PIN = "LC2026";

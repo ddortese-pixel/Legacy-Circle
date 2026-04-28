@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LCSponsorSpotlight from "./LCSponsorSpotlight";
+import { usePageMeta } from "./usePageMeta";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 const NAV = [
@@ -70,6 +72,12 @@ export default function LCProgress() {
   const nextRank    = LEGACY_RANKS.find(r => r.xpNeeded > xp);
   const rankProgress = nextRank ? Math.round(((xp - currentRank.xpNeeded) / (nextRank.xpNeeded - currentRank.xpNeeded)) * 100) : 100;
 
+  usePageMeta({
+    title: "Progress · The Legacy Circle",
+    description: "Track Legacy Circle XP, badges, Indiana standards alignment, and long-term character-development progress.",
+    keywords: "Legacy Circle progress, student badges, Indiana standards, SEL progress",
+  });
+
   function badgeEarned(b) {
     if (b.xpNeeded && xp < b.xpNeeded) return false;
     if (b.streakNeeded && streak < b.streakNeeded) return false;
@@ -103,6 +111,7 @@ export default function LCProgress() {
       </div>
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "18px 16px" }}>
+        <LCSponsorSpotlight app="legacy_circle" placement="progress" />
 
         {tab === "overview" && <>
           {/* Stats */}

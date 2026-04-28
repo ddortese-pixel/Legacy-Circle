@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { usePageMeta } from "./usePageMeta";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 
@@ -8,7 +9,7 @@ const SECTIONS = [
 Operator: Legacy Circle LLC
 Location: Indianapolis, Indiana, USA
 Contact: ddortese@gmail.com
-Website: https://legacycircle.app
+Website: https://legacycirclewwebsite.base44.app
 Last Updated: April 2026` },
 
   { title: "2. COPPA Compliance — Children Under 13", body: `The Legacy Circle fully complies with the Children's Online Privacy Protection Act (COPPA, 15 U.S.C. §§ 6501–6506) and the FTC's COPPA Rule (16 C.F.R. Part 312).
@@ -176,6 +177,12 @@ missingkids.org/gethelpnow/cybertipline` },
 
 export default function LCPrivacyPolicy() {
   const navigate = useNavigate();
+
+  usePageMeta({
+    title: "Privacy Policy · The Legacy Circle",
+    description: "Review Legacy Circle privacy commitments covering COPPA, FERPA, GDPR-K, CCPA, and child-safe data practices.",
+    keywords: "Legacy Circle privacy policy, COPPA, FERPA, GDPR-K, child privacy",
+  });
 
   return (
     <div style={{ fontFamily: "sans-serif", minHeight: "100vh", background: T.bg, color: T.text, paddingBottom: 60 }}>

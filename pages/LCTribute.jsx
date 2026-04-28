@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePageMeta } from "./usePageMeta";
 
 const T = {
   bg: "#0e1020",
@@ -31,6 +33,15 @@ const QUALITIES = [
 
 export default function LCTribute() {
   const navigate = useNavigate();
+
+  usePageMeta({
+    title: "Tribute to J'Mell Dowdell · The Legacy Circle",
+    description: "Read the tribute to J'Mell Dowdell and see how his values shape the mission, characters, and purpose of Legacy Circle.",
+    keywords: "J'Mell Dowdell, Legacy Circle tribute, mission, character education",
+  });
+
+  useEffect(() => {
+  }, []);
 
   return (
     <div style={{
@@ -232,6 +243,35 @@ export default function LCTribute() {
           <div style={{ color: T.gold, fontWeight: 700, fontSize: 14, marginTop: 16, fontStyle: "italic" }}>
             "The best way to honor someone's life is to live better because of them."
           </div>
+        </div>
+
+        <div style={{
+          background: T.card,
+          borderRadius: 16,
+          border: `1px solid ${T.border}`,
+          padding: "22px 24px",
+          marginBottom: 28,
+        }}>
+          <div style={{ fontSize: 15, fontWeight: 800, color: T.gold, marginBottom: 10 }}>
+            Mission, Schools, and Partnerships
+          </div>
+          <div style={{ color: T.muted, fontSize: 14, lineHeight: 1.8, marginBottom: 16 }}>
+            Legacy Circle now has a dedicated mission page that explains the school pilot model, sponsor impact tiers, pricing, and partnership strategy behind the platform.
+          </div>
+          <button
+            onClick={() => navigate("/LCAboutMission")}
+            style={{
+              background: "transparent",
+              border: `1px solid ${T.gold}50`,
+              borderRadius: 12,
+              padding: "12px 16px",
+              color: T.gold,
+              fontWeight: 800,
+              cursor: "pointer",
+            }}
+          >
+            Explore the Mission Page
+          </button>
         </div>
 
         {/* CTA */}

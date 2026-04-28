@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePageMeta } from "./usePageMeta";
 
 const LC_ICON = "https://media.base44.com/images/public/69cdc0f4895939ce59ad81c4/3508b8e9c_1774579448257.png";
 const GA_ID = "G-HEWR0ZB5G8";
@@ -31,13 +32,15 @@ export default function LCSplashScreen() {
   const [guideIdx, setGuideIdx] = useState(0);
   const navigate = useNavigate();
 
+  usePageMeta({
+    title: "The Legacy Circle",
+    description: "Legacy Circle is a gamified SEL platform honoring J'Mel Dowdell through AI-adaptive stories, Glow mentorship, and character-building missions.",
+    keywords: "Legacy Circle, SEL app, character education, youth mentorship, J'Mel Dowdell",
+    icon: LC_ICON,
+  });
+
   useEffect(() => {
     injectGA();
-    // Set favicon & title
-    let link = document.querySelector("link[rel~='icon']");
-    if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
-    link.href = LC_ICON;
-    document.title = "The Legacy Circle";
 
     const t1 = setTimeout(() => setPhase("hold"), 400);
     const t2 = setTimeout(() => setPhase("out"), 3400);

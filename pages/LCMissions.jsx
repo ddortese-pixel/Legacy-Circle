@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { LearnerProfile } from "@/api/entities";
+import LCSponsorSpotlight from "./LCSponsorSpotlight";
+import { usePageMeta } from "./usePageMeta";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 const NAV = [
@@ -70,12 +72,22 @@ export default function LCMissions() {
   const [intention, setIntention] = useState(localStorage.getItem("lc_intention") || "");
   const [intentionDone, setIntentionDone] = useState(localStorage.getItem(`lc_intention_done_${new Date().toDateString()}`) === "true");
   const todayPrompt = INTENTIONS[new Date().getDate() % INTENTIONS.length];
+  const completedSet = useMemo(() => new Set(completed), [completed]);
 
-  const totalXpToday = missions.filter(m => completed.includes(m.id)).reduce((s, m) => s + m.xp, 0) + (intentionDone ? 25 : 0);
+  usePageMeta({
+    title: "Daily Missions · The Legacy Circle",
+    description: "Complete daily Legacy Circle missions and intentions to earn XP while building leadership, empathy, and creative confidence.",
+    keywords: "daily missions, Legacy Circle, SEL activities, character missions",
+  });
+
+  const totalXpToday = useMemo(
+    () => missions.reduce((sum, m) => sum + (completedSet.has(m.id) ? m.xp : 0), 0) + (intentionDone ? 25 : 0),
+    [missions, completedSet, intentionDone]
+  );
   const allDone = completed.length >= missions.length && intentionDone;
 
   async function completeMission(id, xp) {
-    if (completed.includes(id)) return;
+    if (completedSet.has(id)) return;
     const updated = [...completed, id];
     setCompleted(updated);
     localStorage.setItem(todayKey, JSON.stringify(updated));
@@ -121,6 +133,7 @@ export default function LCMissions() {
       </div>
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "18px 16px" }}>
+        <LCSponsorSpotlight app="legacy_circle" placement="missions" />
 
         {/* Intention card */}
         <div style={{ background: T.card, borderRadius: 18, padding: 20, marginBottom: 18, border: `1px solid ${guide.color}35`, boxShadow: `0 4px 20px ${guide.color}10` }}>
@@ -170,7 +183,7 @@ export default function LCMissions() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
           {missions.map(m => {
-            const done = completed.includes(m.id);
+            const done = completedSet.has(m.id);
             return (
               <div key={m.id} onClick={() => !done && completeMission(m.id, m.xp)} style={{
                 background: done ? "#0a1e0a" : T.card, border: `1px solid ${done ? "#22c55e30" : T.border}`,

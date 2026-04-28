@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { GET_MILESTONES_URL, UPDATE_MILESTONE_URL } from "../functionUrls";
+import { usePageMeta } from "./usePageMeta";
 
-const MILESTONES_URL = "https://legacy-circle-ae3f9932.base44.app/functions/getMilestones";
-const UPDATE_URL = "https://legacy-circle-ae3f9932.base44.app/functions/updateMilestone";
+const MILESTONES_URL = GET_MILESTONES_URL;
+const UPDATE_URL = UPDATE_MILESTONE_URL;
 
 const LC_ICON = "https://media.base44.com/images/public/69d9b8416964fe31ae3f9932/f199871d3_generated_image.png";
 
@@ -39,13 +41,15 @@ export default function LaunchTracker() {
   const [error, setError] = useState(false);
   const navigate = useNavigate();
 
+  usePageMeta({
+    title: "Launch Tracker · The Legacy Circle",
+    description: "Track product, app-store, and launch milestones for Legacy Circle operations and rollout readiness.",
+    keywords: "Legacy Circle launch tracker, rollout, milestones, app store readiness",
+    icon: LC_ICON,
+  });
+
   useEffect(() => {
     injectGA("G-HEWR0ZB5G8");
-    // Set favicon
-    let link = document.querySelector("link[rel~='icon']");
-    if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
-    link.href = LC_ICON;
-    document.title = "Launch Tracker · The Legacy Circle";
     loadMilestones();
   }, []);
 

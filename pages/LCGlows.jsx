@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import LCSponsorSpotlight from "./LCSponsorSpotlight";
+import { usePageMeta } from "./usePageMeta";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 const NAV = [
@@ -35,6 +37,12 @@ export default function LCGlows() {
   const [sent, setSent] = useState(false);
   const [glows, setGlows] = useState([]);
   const fromName = localStorage.getItem("lc_name") || "Learner";
+
+  usePageMeta({
+    title: "Glow Mentorship · The Legacy Circle",
+    description: "Send moderated Glow messages that celebrate kindness, teamwork, and encouragement across the Legacy Circle community.",
+    keywords: "Glow mentorship, peer encouragement, SEL community, Legacy Circle glows",
+  });
 
   useEffect(() => {
     setGlows(JSON.parse(localStorage.getItem("lc_glows_sent") || "[]"));
@@ -75,6 +83,8 @@ export default function LCGlows() {
       </div>
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 16px", paddingBottom: 90 }}>
+        <LCSponsorSpotlight app="legacy_circle" placement="global" />
+
         {tab === "send" && (
           <>
             {/* What is a Glow */}
