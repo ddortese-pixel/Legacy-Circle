@@ -101,5 +101,5 @@ We may update this policy from time to time. We will notify parents via email of
 
 For privacy questions or requests:  
 📧 privacy@thelegacycircle.com  
-🌐 thelegacycircle.com/privacy
+🌐 https://legacycirclewwebsite.base44.app
 

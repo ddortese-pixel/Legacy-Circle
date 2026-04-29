@@ -1,0 +1,300 @@
+name: Load Test Stress Weekly
+
+"on":
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 5 * * 0"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  k6-load-test-stress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: legacy_circle
+            default_base_url: https://legacy-circle-ae3f9932.base44.app
+            include_twilio: true
+          - platform: ourspace
+            default_base_url: https://legacy-circle-ae3f9932.base44.app
+            include_twilio: false
+    env:
+      PLATFORM: "${{ matrix.platform }}"
+      BASE_URL: "${{ matrix.platform == 'legacy_circle' && (secrets.LOAD_TEST_BASE_URL_LEGACY || secrets.LOAD_TEST_BASE_URL) || (secrets.LOAD_TEST_BASE_URL_OURSPACE || secrets.LOAD_TEST_BASE_URL || matrix.default_base_url) }}"
+      LOAD_TEST_TOKEN: "${{ secrets.LOAD_TEST_TOKEN }}"
+      LOAD_PROFILE: "stress"
+      INCLUDE_TWILIO_ICE: "${{ matrix.include_twilio }}"
+      ADMIN_TAG_1: "${{ secrets.ADMIN_TAG_1 }}"
+      ADMIN_TAG_2: "${{ secrets.ADMIN_TAG_2 }}"
+      ADMIN_FEEDBACK_WEBHOOK_URL: "${{ secrets.ADMIN_FEEDBACK_WEBHOOK_URL }}"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Print run settings
+        run: |
+          echo "PLATFORM=${PLATFORM}"
+          echo "BASE_URL=${BASE_URL}"
+          echo "LOAD_PROFILE=${LOAD_PROFILE}"
+          echo "INCLUDE_TWILIO_ICE=${INCLUDE_TWILIO_ICE}"
+
+      - name: Run weekly stress tests
+        run: |
+          k6 run \
+            --summary-export=load-test-stress-summary.json \
+            load-tests/k6/public-endpoints.js
+
+      - name: Analyze stress results and notify admins
+        if: always()
+        run: |
+          set -e
+
+          if [ ! -f load-test-stress-summary.json ]; then
+            echo "load-test-stress-summary.json not found" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          P95=$(jq -r '.metrics.http_req_duration.values["p(95)"] // 0' load-test-stress-summary.json)
+          P99=$(jq -r '.metrics.http_req_duration.values["p(99)"] // 0' load-test-stress-summary.json)
+          ERROR_RATE=$(jq -r '.metrics.http_req_failed.values.rate // 0' load-test-stress-summary.json)
+          REQS=$(jq -r '.metrics.http_reqs.values.count // 0' load-test-stress-summary.json)
+          DURATION=$(jq -r '.state.testRunDurationMs // 0' load-test-stress-summary.json)
+
+          FAILED_THRESHOLDS=$(jq -r '[.metrics[]?.thresholds? | to_entries[]? | select((.value.ok // .value) == false)] | length' load-test-stress-summary.json)
+          STATUS="PASS"
+          if [ "${FAILED_THRESHOLDS}" != "0" ]; then
+            STATUS="FAIL"
+          fi
+
+          TAGS="${ADMIN_TAG_1} ${ADMIN_TAG_2}"
+
+          {
+            echo "## Weekly Stress Analysis (${PLATFORM})"
+            echo ""
+            echo "- Profile: ${LOAD_PROFILE}"
+            echo "- Status: ${STATUS}"
+            echo "- Requests: ${REQS}"
+            echo "- Error rate: ${ERROR_RATE}"
+            echo "- p95 latency (ms): ${P95}"
+            echo "- p99 latency (ms): ${P99}"
+            echo "- Runtime (ms): ${DURATION}"
+            echo "- Admin tags: ${TAGS}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -n "${ADMIN_FEEDBACK_WEBHOOK_URL}" ]; then
+            MSG="[${PLATFORM}] weekly stress ${STATUS} | reqs=${REQS} err=${ERROR_RATE} p95=${P95}ms p99=${P99}ms | ${TAGS}"
+            curl -sS -X POST "${ADMIN_FEEDBACK_WEBHOOK_URL}" \
+              -H "Content-Type: application/json" \
+              -d "{\"text\":\"${MSG}\"}" >/dev/null || true
+          fi
+
+      - name: Upload summary artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-stress-summary-${{ matrix.platform }}
+          path: load-test-stress-summary.json
+
+      - name: Open or update stress failure issue
+        if: failure()
+        uses: actions/github-script@v7
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          LOAD_PROFILE: ${{ env.LOAD_PROFILE }}
+          ADMIN_TAG_1: ${{ env.ADMIN_TAG_1 }}
+          ADMIN_TAG_2: ${{ env.ADMIN_TAG_2 }}
+        with:
+          script: |
+            const fs = require("fs");
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const platform = process.env.PLATFORM || "unknown";
+            const profile = process.env.LOAD_PROFILE || "stress";
+            const adminTag1 = process.env.ADMIN_TAG_1 || "";
+            const adminTag2 = process.env.ADMIN_TAG_2 || "";
+            const adminTags = [adminTag1, adminTag2].filter(Boolean).join(" ") || "(not configured)";
+            const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
+            const issueTitle = `Load test stress failure: ${platform}`;
+
+            let metrics = {
+              reqs: "n/a",
+              err: "n/a",
+              p95: "n/a",
+              p99: "n/a",
+              duration: "n/a",
+            };
+
+            try {
+              const summaryRaw = fs.readFileSync("load-test-stress-summary.json", "utf8");
+              const summary = JSON.parse(summaryRaw);
+              metrics = {
+                reqs: summary?.metrics?.http_reqs?.values?.count ?? "n/a",
+                err: summary?.metrics?.http_req_failed?.values?.rate ?? "n/a",
+                p95: summary?.metrics?.http_req_duration?.values?.["p(95)"] ?? "n/a",
+                p99: summary?.metrics?.http_req_duration?.values?.["p(99)"] ?? "n/a",
+                duration: summary?.state?.testRunDurationMs ?? "n/a",
+              };
+            } catch (e) {
+              core.warning(`Could not read stress summary JSON: ${String(e)}`);
+            }
+
+            const body = [
+              "## Stress Load Test Failure",
+              "",
+              `- Platform: ${platform}`,
+              `- Profile: ${profile}`,
+              `- Requests: ${metrics.reqs}`,
+              `- Error rate: ${metrics.err}`,
+              `- p95 latency (ms): ${metrics.p95}`,
+              `- p99 latency (ms): ${metrics.p99}`,
+              `- Runtime (ms): ${metrics.duration}`,
+              `- Run: ${runUrl}`,
+              `- Admin tags: ${adminTags}`,
+              "",
+              "Please review thresholds, endpoint health, and recent deployment changes.",
+            ].join("\n");
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: "open",
+              labels: "load-test,stress-failure",
+              per_page: 100,
+            });
+
+            const existing = issues.find((issue) => issue.title === issueTitle);
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title: issueTitle,
+                body,
+                labels: ["load-test", "stress-failure"],
+              });
+            }
+
+      - name: Auto-close stress failure issue on recovery
+        if: success()
+        uses: actions/github-script@v7
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          LOAD_PROFILE: ${{ env.LOAD_PROFILE }}
+          ADMIN_TAG_1: ${{ env.ADMIN_TAG_1 }}
+          ADMIN_TAG_2: ${{ env.ADMIN_TAG_2 }}
+        with:
+          script: |
+            const fs = require("fs");
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const platform = process.env.PLATFORM || "unknown";
+            const profile = process.env.LOAD_PROFILE || "stress";
+            const adminTag1 = process.env.ADMIN_TAG_1 || "";
+            const adminTag2 = process.env.ADMIN_TAG_2 || "";
+            const adminTags = [adminTag1, adminTag2].filter(Boolean).join(" ") || "(not configured)";
+            const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
+            const issueTitle = `Load test stress failure: ${platform}`;
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: "open",
+              labels: "load-test,stress-failure",
+              per_page: 100,
+            });
+
+            const existing = issues.find((issue) => issue.title === issueTitle);
+            if (!existing) {
+              core.info(`No open stress failure issue found for ${platform}.`);
+              return;
+            }
+
+            let metrics = {
+              reqs: "n/a",
+              err: "n/a",
+              p95: "n/a",
+              p99: "n/a",
+              duration: "n/a",
+            };
+
+            try {
+              const summaryRaw = fs.readFileSync("load-test-stress-summary.json", "utf8");
+              const summary = JSON.parse(summaryRaw);
+              metrics = {
+                reqs: summary?.metrics?.http_reqs?.values?.count ?? "n/a",
+                err: summary?.metrics?.http_req_failed?.values?.rate ?? "n/a",
+                p95: summary?.metrics?.http_req_duration?.values?.["p(95)"] ?? "n/a",
+                p99: summary?.metrics?.http_req_duration?.values?.["p(99)"] ?? "n/a",
+                duration: summary?.state?.testRunDurationMs ?? "n/a",
+              };
+            } catch (e) {
+              core.warning(`Could not read stress summary JSON: ${String(e)}`);
+            }
+
+            const recoveryComment = [
+              "## Stress Load Test Recovery",
+              "",
+              `- Platform: ${platform}`,
+              `- Profile: ${profile}`,
+              `- Requests: ${metrics.reqs}`,
+              `- Error rate: ${metrics.err}`,
+              `- p95 latency (ms): ${metrics.p95}`,
+              `- p99 latency (ms): ${metrics.p99}`,
+              `- Runtime (ms): ${metrics.duration}`,
+              `- Run: ${runUrl}`,
+              `- Admin tags: ${adminTags}`,
+              "",
+              "Thresholds passed and the stress failure issue is being closed automatically.",
+            ].join("\n");
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: existing.number,
+              body: recoveryComment,
+            });
+
+            await github.rest.issues.update({
+              owner,
+              repo,
+              issue_number: existing.number,
+              state: "closed",
+            });
+
+            try {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo,
+                issue_number: existing.number,
+                name: "stress-failure",
+              });
+            } catch (e) {
+              core.info(`stress-failure label removal skipped: ${String(e)}`);
+            }
+
+            try {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: existing.number,
+                labels: ["recovered"],
+              });
+            } catch (e) {
+              core.info(`recovered label add skipped: ${String(e)}`);
+            }

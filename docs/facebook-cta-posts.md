@@ -7,7 +7,7 @@
 
 **CORRECT URLS:**
 - App: https://the-legacy-circle-59ad81c4.base44.app
-- Webpage: https://legacy-circle-web-page.base44.app
+- Webpage: https://legacycirclewwebsite.base44.app
 
 ---
 
@@ -24,7 +24,7 @@ The Legacy Circle is a FREE AI-powered character education app for kids ages 2�
 💛 For J'Mell. For our kids. For Indianapolis.
 
 👉 Try it FREE and share his legacy → https://the-legacy-circle-59ad81c4.base44.app
-🌐 Learn more → https://legacy-circle-web-page.base44.app
+🌐 Learn more → https://legacycirclewwebsite.base44.app
 
 If J'Mell touched your life, share this post. Let's honor him by raising the next generation right. 🙏
 
@@ -53,7 +53,7 @@ Every story your child plays teaches real life skills — empathy, integrity, le
 Stop waiting. Start building their character TODAY.
 
 👉 START FOR FREE RIGHT NOW → https://the-legacy-circle-59ad81c4.base44.app
-🌐 More info for parents → https://legacy-circle-web-page.base44.app
+🌐 More info for parents → https://legacycirclewwebsite.base44.app
 
 TAG a parent who needs this in the comments 👇
 Which character does YOUR child remind you of? ⚖️💻🏃🎨
@@ -78,7 +78,7 @@ This is the app your students will WANT to use — and the one your district's S
 
 👉 Try the app free → https://the-legacy-circle-59ad81c4.base44.app
 📧 Request a school partnership → ddortese@gmail.com
-🌐 Full info → https://legacy-circle-web-page.base44.app
+🌐 Full info → https://legacycirclewwebsite.base44.app
 
 Share this with your school's Facebook group, PTA, or teacher team! 🏫
 
@@ -102,7 +102,7 @@ The answer is The Legacy Circle. Free. Local. Built with love.
 We need Indianapolis to show up for this. Share. Tag. Spread the word.
 
 👉 Try it FREE → https://the-legacy-circle-59ad81c4.base44.app
-🌐 Learn more → https://legacy-circle-web-page.base44.app
+🌐 Learn more → https://legacycirclewwebsite.base44.app
 
 Drop a 🏙️ if you're proud of what's being built in Indianapolis. Let's GO.
 

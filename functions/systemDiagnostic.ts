@@ -1,7 +1,9 @@
 import base44 from "../src/base44Client";
 
 const ADMIN_EMAIL = "ddortese@gmail.com";
-const APP_URL_OS2 = "https://legacy-circle.base44.app";
+const APP_URL_OS2 = "https://our-space-vibes.base44.app";
+const APP_URL_LC = "https://the-legacy-circle-59ad81c4.base44.app";
+const FUNCTION_APP_URL = "https://legacy-circle-ae3f9932.base44.app";
 const APP_URLS_TO_CHECK = [
   { name: "OurSpace 2.0 - Home", url: `${APP_URL_OS2}/Home`, app: "OurSpace 2.0" },
   { name: "OurSpace 2.0 - Discover", url: `${APP_URL_OS2}/Discover`, app: "OurSpace 2.0" },
@@ -11,14 +13,24 @@ const APP_URLS_TO_CHECK = [
   { name: "OurSpace 2.0 - Onboarding", url: `${APP_URL_OS2}/Onboarding`, app: "OurSpace 2.0" },
   { name: "OurSpace 2.0 - Privacy Policy", url: `${APP_URL_OS2}/PrivacyPolicy`, app: "OurSpace 2.0" },
   { name: "OurSpace 2.0 - Terms of Service", url: `${APP_URL_OS2}/TermsOfService`, app: "OurSpace 2.0" },
-  { name: "The Legacy Circle - Splash", url: `${APP_URL_OS2}/SplashScreen`, app: "The Legacy Circle" },
-  { name: "The Legacy Circle - Launch Tracker", url: `${APP_URL_OS2}/LaunchTracker`, app: "The Legacy Circle" },
+  { name: "The Legacy Circle - Splash", url: `${APP_URL_LC}/LCSplashScreen`, app: "The Legacy Circle" },
+  { name: "The Legacy Circle - Home", url: `${APP_URL_LC}/LCHome`, app: "The Legacy Circle" },
+  { name: "The Legacy Circle - Stories", url: `${APP_URL_LC}/LCStories`, app: "The Legacy Circle" },
+  { name: "The Legacy Circle - Progress", url: `${APP_URL_LC}/LCProgress`, app: "The Legacy Circle" },
+  { name: "The Legacy Circle - Glows", url: `${APP_URL_LC}/LCGlows`, app: "The Legacy Circle" },
+  { name: "The Legacy Circle - Profile", url: `${APP_URL_LC}/LCProfile`, app: "The Legacy Circle" },
+  { name: "The Legacy Circle - Privacy", url: `${APP_URL_LC}/LCPrivacyPolicy`, app: "The Legacy Circle" },
+  { name: "The Legacy Circle - Terms", url: `${APP_URL_LC}/LCTermsOfService`, app: "The Legacy Circle" },
+  { name: "The Legacy Circle - Launch Tracker", url: `${APP_URL_LC}/LaunchTracker`, app: "The Legacy Circle" },
 ];
 
 const BACKEND_FUNCTIONS_TO_CHECK = [
-  { name: "getPublicFeed", url: `${APP_URL_OS2}/functions/getPublicFeed`, method: "POST", body: { limit: 5, skip: 0 }, app: "OurSpace 2.0" },
-  { name: "getPublicDiscover", url: `${APP_URL_OS2}/functions/getPublicDiscover`, method: "POST", body: { query: "" }, app: "OurSpace 2.0" },
-  { name: "getMilestones", url: `${APP_URL_OS2}/functions/getMilestones`, method: "POST", body: {}, app: "The Legacy Circle" },
+  { name: "getPublicFeed", url: `${FUNCTION_APP_URL}/functions/getPublicFeed`, method: "POST", body: { limit: 5, skip: 0 }, app: "OurSpace 2.0" },
+  { name: "getPublicDiscover", url: `${FUNCTION_APP_URL}/functions/getPublicDiscover`, method: "POST", body: { query: "" }, app: "OurSpace 2.0" },
+  { name: "getActivityFeed", url: `${FUNCTION_APP_URL}/functions/getActivityFeed`, method: "POST", body: { profile_id: "diagnostic" }, app: "OurSpace 2.0" },
+  { name: "getSponsors", url: `${FUNCTION_APP_URL}/functions/getSponsors`, method: "POST", body: { placement: "home" }, app: "Both" },
+  { name: "getMilestones", url: `${FUNCTION_APP_URL}/functions/getMilestones`, method: "POST", body: {}, app: "The Legacy Circle" },
+  { name: "getTwilioIceServers", url: `${FUNCTION_APP_URL}/functions/getTwilioIceServers`, method: "POST", body: {}, app: "The Legacy Circle" },
 ];
 
 async function sendAdminEmail(subject: string, htmlBody: string) {
@@ -65,9 +77,18 @@ async function checkFunctionHealth(check: { name: string; url: string; method: s
       signal: AbortSignal.timeout(12000),
     });
     const elapsed = Date.now() - start;
+    const responseText = await res.text();
+    let responseJson = null;
+    if (responseText) {
+      try {
+        responseJson = JSON.parse(responseText);
+      } catch {
+        responseJson = null;
+      }
+    }
+
     if (res.ok) {
-      const data = await res.json().catch(() => null);
-      const hasData = data !== null;
+      const hasData = responseJson !== null;
       return {
         status: hasData ? "pass" : "warning",
         severity: hasData ? "low" : "medium",
@@ -75,7 +96,31 @@ async function checkFunctionHealth(check: { name: string; url: string; method: s
         auto_fixed: false,
       };
     } else {
-      return { status: "error", severity: "high", details: `HTTP ${res.status} in ${elapsed}ms`, auto_fixed: false };
+      let severity = "high";
+      let details = `HTTP ${res.status} in ${elapsed}ms`;
+
+      if (responseJson?.message) {
+        details = `HTTP ${res.status} in ${elapsed}ms — ${responseJson.message}`;
+      } else if (responseJson?.error) {
+        details = `HTTP ${res.status} in ${elapsed}ms — ${responseJson.error}`;
+      } else if (responseText) {
+        details = `HTTP ${res.status} in ${elapsed}ms — ${responseText.slice(0, 200)}`;
+      }
+
+      if (check.name === "getTwilioIceServers") {
+        if (res.status === 404) {
+          severity = "critical";
+          details = `HTTP 404 in ${elapsed}ms — backend function not deployed on Base44`;
+        } else if (res.status === 500) {
+          severity = "critical";
+          details = `HTTP 500 in ${elapsed}ms — missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN in Base44 env`;
+        } else if (res.status === 502) {
+          severity = "high";
+          details = `HTTP 502 in ${elapsed}ms — Twilio upstream request failed or retries were exhausted`;
+        }
+      }
+
+      return { status: "error", severity, details, auto_fixed: false };
     }
   } catch (e: any) {
     return { status: "error", severity: "critical", details: `Function error: ${e.message}`, auto_fixed: false };

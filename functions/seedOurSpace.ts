@@ -198,13 +198,86 @@ export default async function seedOurSpace(req: Request) {
     { user_email: "aisha.r@ourspace.app", from_email: "priya.k@ourspace.app", from_name: "Priya K 🌸", type: "friend_request", message: "Priya K wants to be your friend", is_read: false },
   ];
 
+  // Seed Sponsor Placements (shared inventory for both platforms)
+  const sponsorPlacements = [
+    {
+      sponsor_name: "Indy Youth Makers",
+      sponsor_tagline: "Hands-on STEM kits for creative learners.",
+      image_url: "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80",
+      cta_text: "Explore Books",
+      cta_url: "https://books.google.com/books?q=STEM+books+for+kids",
+      target_app: "legacy_circle",
+      placement: "home",
+      active: true,
+      priority: 90,
+      starts_at: new Date().toISOString(),
+      disclosure: "Sponsored",
+      age_safe: true,
+      impressions_count: 0,
+      clicks_count: 0,
+      metadata: { campaign: "lc_q2_launch" }
+    },
+    {
+      sponsor_name: "Circle Tutors Network",
+      sponsor_tagline: "Live homework coaching for families in Indianapolis.",
+      image_url: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80",
+      cta_text: "View Tutor Books",
+      cta_url: "https://books.google.com/books?q=homework+help+books+for+students",
+      target_app: "legacy_circle",
+      placement: "missions",
+      active: true,
+      priority: 80,
+      starts_at: new Date().toISOString(),
+      disclosure: "Sponsored",
+      age_safe: true,
+      impressions_count: 0,
+      clicks_count: 0,
+      metadata: { campaign: "mission_support" }
+    },
+    {
+      sponsor_name: "Local Creator Market",
+      sponsor_tagline: "Sell originals. Keep control. Build community.",
+      image_url: "https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1200&q=80",
+      cta_text: "Creator Selling Books",
+      cta_url: "https://books.google.com/books?q=how+to+sell+online+for+creators",
+      target_app: "ourspace",
+      placement: "marketplace",
+      active: true,
+      priority: 90,
+      starts_at: new Date().toISOString(),
+      disclosure: "Sponsored",
+      age_safe: true,
+      impressions_count: 0,
+      clicks_count: 0,
+      metadata: { campaign: "os_marketplace_growth" }
+    },
+    {
+      sponsor_name: "CoLab Creative Grants",
+      sponsor_tagline: "Mini-grants for teen creators and startup communities.",
+      image_url: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80",
+      cta_text: "Funding Strategy Books",
+      cta_url: "https://books.google.com/books?q=creative+grant+writing+books",
+      target_app: "ourspace",
+      placement: "feed",
+      active: true,
+      priority: 70,
+      starts_at: new Date().toISOString(),
+      disclosure: "Sponsored",
+      age_safe: true,
+      impressions_count: 0,
+      clicks_count: 0,
+      metadata: { campaign: "os_feed_sponsor" }
+    },
+  ];
+
   try {
-    const [p, po, f, w, n] = await Promise.all([
+    const [p, po, f, w, n, s] = await Promise.all([
       db.Profile.bulkCreate(profiles),
       db.Post.bulkCreate(posts),
       db.Friend.bulkCreate(friends),
       db.WallPost.bulkCreate(wallPosts),
       db.Notification.bulkCreate(notifications),
+      db.SponsorPlacement.bulkCreate(sponsorPlacements),
     ]);
 
     return new Response(JSON.stringify({
@@ -214,7 +287,8 @@ export default async function seedOurSpace(req: Request) {
         posts: posts.length,
         friends: friends.length,
         wallPosts: wallPosts.length,
-        notifications: notifications.length
+        notifications: notifications.length,
+        sponsors: sponsorPlacements.length
       }
     }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {

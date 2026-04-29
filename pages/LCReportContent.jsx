@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { REPORT_CONTENT_URL } from "../functionUrls";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 
@@ -33,7 +34,7 @@ export default function LCReportContent() {
     if (!reason || !reportedUser.trim()) return;
     setLoading(true);
     try {
-      await fetch("https://legacy-circle-ae3f9932.base44.app/functions/lcReportContent", {
+      await fetch(REPORT_CONTENT_URL, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reporter_email: reporterEmail, reported_user: reportedUser, content_type: contentType, reason, details }),
       });

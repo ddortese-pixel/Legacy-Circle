@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const ADMIN_EMAIL = "ddortese@gmail.com";
 const APP_URL = "https://the-legacy-circle-59ad81c4.base44.app";
-const WEBPAGE_URL = "https://legacycirclewebpage.base44.app";
+const WEBPAGE_URL = "https://legacycirclewwebsite.base44.app";
 
 const PAGES_TO_CHECK = [
   { name: "LCSplashScreen",    url: `${APP_URL}/LCSplashScreen` },

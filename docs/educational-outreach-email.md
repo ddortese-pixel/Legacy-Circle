@@ -51,7 +51,7 @@ Students earn XP, badges, and advance through 10 Legacy Ranks (Seeker → Champi
 - Parent engagement initiatives
 
 **Try It Now (No Download Required)**
-👉 https://legacy-circle.base44.app/LCSplashScreen
+👉 https://the-legacy-circle-59ad81c4.base44.app/LCSplashScreen
 
 **We'd Love to Partner With You**
 
@@ -65,7 +65,7 @@ We are actively seeking school and district partnerships across Indiana. We can 
 If you're interested in bringing The Legacy Circle to your students, I'd love to schedule a 15-minute call or demo at your convenience.
 
 📧 ddortese@gmail.com
-🌐 https://legacy-circle.base44.app
+🌐 https://legacycirclewwebsite.base44.app
 
 Thank you for everything you do for our students. I hope The Legacy Circle can be a small but meaningful tool in your mission.
 
@@ -75,7 +75,7 @@ With gratitude,
 Founder, The Legacy Circle
 Indianapolis, Indiana
 ddortese@gmail.com
-https://legacy-circle.base44.app
+https://legacycirclewwebsite.base44.app
 
 ---
 *To unsubscribe from future communications, reply with "unsubscribe" in the subject line.*

@@ -10,7 +10,7 @@
 The Legacy Circle is a gamified, character-driven learning platform built to develop **social-emotional learning (SEL), digital literacy, physical wellness, and creative expression** in children. Users select a Legacy Guide character and complete story missions, quizzes, daily intentions, and peer encouragement activities.
 
 **Live App:** https://the-legacy-circle-59ad81c4.base44.app  
-**Marketing Site:** https://legacy-circle-web-page.base44.app  
+**Marketing Site:** https://legacycirclewwebsite.base44.app  
 **Platform:** Base44 (React frontend + managed backend)
 
 ---
@@ -40,7 +40,27 @@ The Legacy Circle is a gamified, character-driven learning platform built to dev
 
 ---
 
+## 🧪 Automated Testing
+
+![Deno](https://github.com/ddortese-pixel/Legacy-Circle/actions/workflows/deno.yml/badge.svg)
+![Load Test](https://github.com/ddortese-pixel/Legacy-Circle/actions/workflows/load-test.yml/badge.svg)
+![Load Stress Weekly](https://github.com/ddortese-pixel/Legacy-Circle/actions/workflows/load-test-stress-weekly.yml/badge.svg)
+
+- Functional checks: `.github/workflows/deno.yml` runs `deno lint` and `deno test -A`
+- Traffic/load checks: `.github/workflows/load-test.yml` runs k6 API traffic profiles
+- Weekly stress checks: `.github/workflows/load-test-stress-weekly.yml` runs stress profile for both platforms
+- Load script: `load-tests/k6/public-endpoints.js`
+- Setup and usage guide: `docs/load-testing.md`
+
+Real-time feedback and analysis are emitted in GitHub Action step summaries and can notify two admin tags via secrets (`ADMIN_TAG_1`, `ADMIN_TAG_2`) plus optional webhook (`ADMIN_FEEDBACK_WEBHOOK_URL`).
+
+Load testing is additive only and does not modify runtime architecture.
+
+---
+
 ## 📁 Project Structure
+
+Source of truth: UI route components live under `pages/`.
 
 ```
 pages/
@@ -56,7 +76,10 @@ pages/
   LCTeacherDashboard.jsx   # Teacher classroom view (PIN: LC2026)
   LCPrivacyPolicy.jsx      # COPPA/FERPA/GDPR-K/CCPA privacy policy
   LCTermsOfService.jsx     # Full terms of service
-  LCSplashScreen.jsx       # Animated splash / loading screen
+  LCSponsorSpotlight.jsx   # Shared sponsor/monetization card
+  LaunchTracker.jsx        # Launch and milestone operations dashboard
+  AppStoreReadiness.jsx    # App readiness checklist view
+  LCTribute.jsx            # J'Mell tribute experience
 
 entities/
   LearnerProfile.json      # Core user/child profile + gamification state
@@ -76,12 +99,38 @@ entities/
   MarketplaceItem.json     # Store items (frames, emojis, etc.)
   SeasonalEvent.json       # Limited-time community events
   UnlockedMuseumItem.json  # Indiana history museum unlocks
+  SponsorPlacement.json    # Sponsor campaign inventory and placement rules
+  SponsorClick.json        # Sponsor click analytics events
 
 functions/
+  getSponsors.ts              # Returns active sponsor inventory by app/placement
+  trackSponsorClick.ts        # Tracks sponsor CTA click events
+  createSponsorPlacement.ts   # Creates sponsor campaign entries
+  createMarketplaceProduct.ts # Creates marketplace products (Google Books validation for digital books)
+  getActivityFeed.ts          # Unified activity feed endpoint
+  togglePostLike.ts           # Like/unlike interaction endpoint
   sendParentVerification.ts   # Sends COPPA parental consent email
+  getTwilioIceServers.ts      # Returns Twilio TURN/STUN ICE config for realtime sessions
   lcSystemDiagnostic.ts       # App health check (paused until May 4)
   weeklyAnalyticsReport.ts    # Weekly GA4 report → ddortese@gmail.com
 ```
+
+### Realtime TURN endpoint
+
+If you add voice, video, or other WebRTC features, use the backend function `getTwilioIceServers.ts` instead of exposing Twilio credentials in the client. It requests a short-lived Twilio token server-side and returns:
+
+- `iceServers`
+- `ttl`
+- `expiresAt`
+
+Required deployment environment variables:
+
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+
+The endpoint expects `POST` and includes retry/backoff handling for Twilio `429` and `5xx` responses.
+
+For deployment and smoke-test steps, see `docs/twilio-ice-setup.md`.
 
 ---
 

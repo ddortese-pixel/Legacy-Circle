@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
     for (const siteUrl of [
       "https://our-space-vibes.base44.app",
       "https://the-legacy-circle-59ad81c4.base44.app",
-      "https://legacycirclewebpage.base44.app",
+      "https://legacycirclewwebsite.base44.app",
     ]) {
       const gscRes = await fetch(
         `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
@@ -141,7 +141,7 @@ ${gscSection}
 
 ${"─".repeat(40)}
 🔗 The Legacy Circle (App): https://the-legacy-circle-59ad81c4.base44.app/LCSplashScreen
-🔗 Legacy Circle Webpage: https://legacycirclewebpage.base44.app
+🔗 Legacy Circle Webpage: https://legacycirclewwebsite.base44.app
 🔗 OurSpace 2.0: https://our-space-vibes.base44.app
 
 Keep building — talk soon! 🚀`;

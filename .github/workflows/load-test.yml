@@ -1,0 +1,119 @@
+name: Load Test
+
+"on":
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Load profile
+        required: true
+        type: choice
+        default: smoke
+        options:
+          - smoke
+          - baseline
+          - stress
+      includeTwilioIce:
+        description: Include getTwilioIceServers endpoint
+        required: true
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 4 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  k6-load-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: legacy_circle
+            default_base_url: https://legacy-circle-ae3f9932.base44.app
+            include_twilio_default: true
+          - platform: ourspace
+            default_base_url: https://legacy-circle-ae3f9932.base44.app
+            include_twilio_default: false
+    env:
+      PLATFORM: "${{ matrix.platform }}"
+      BASE_URL: "${{ matrix.platform == 'legacy_circle' && (secrets.LOAD_TEST_BASE_URL_LEGACY || secrets.LOAD_TEST_BASE_URL) || (secrets.LOAD_TEST_BASE_URL_OURSPACE || secrets.LOAD_TEST_BASE_URL || matrix.default_base_url) }}"
+      LOAD_TEST_TOKEN: "${{ secrets.LOAD_TEST_TOKEN }}"
+      LOAD_PROFILE: "${{ github.event_name == 'schedule' && 'baseline' || inputs.profile || 'smoke' }}"
+      INCLUDE_TWILIO_ICE: "${{ github.event_name == 'schedule' && 'false' || (matrix.platform == 'legacy_circle' && inputs.includeTwilioIce) || matrix.include_twilio_default }}"
+      ADMIN_TAG_1: "${{ secrets.ADMIN_TAG_1 }}"
+      ADMIN_TAG_2: "${{ secrets.ADMIN_TAG_2 }}"
+      ADMIN_FEEDBACK_WEBHOOK_URL: "${{ secrets.ADMIN_FEEDBACK_WEBHOOK_URL }}"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Print run settings
+        run: |
+          echo "PLATFORM=${PLATFORM}"
+          echo "BASE_URL=${BASE_URL}"
+          echo "LOAD_PROFILE=${LOAD_PROFILE}"
+          echo "INCLUDE_TWILIO_ICE=${INCLUDE_TWILIO_ICE}"
+
+      - name: Run load tests
+        run: |
+          k6 run \
+            --summary-export=load-test-summary.json \
+            load-tests/k6/public-endpoints.js
+
+      - name: Analyze results and notify admins
+        if: always()
+        run: |
+          set -e
+
+          if [ ! -f load-test-summary.json ]; then
+            echo "load-test-summary.json not found" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          P95=$(jq -r '.metrics.http_req_duration.values["p(95)"] // 0' load-test-summary.json)
+          P99=$(jq -r '.metrics.http_req_duration.values["p(99)"] // 0' load-test-summary.json)
+          ERROR_RATE=$(jq -r '.metrics.http_req_failed.values.rate // 0' load-test-summary.json)
+          REQS=$(jq -r '.metrics.http_reqs.values.count // 0' load-test-summary.json)
+          DURATION=$(jq -r '.state.testRunDurationMs // 0' load-test-summary.json)
+
+          FAILED_THRESHOLDS=$(jq -r '[.metrics[]?.thresholds? | to_entries[]? | select((.value.ok // .value) == false)] | length' load-test-summary.json)
+          STATUS="PASS"
+          if [ "${FAILED_THRESHOLDS}" != "0" ]; then
+            STATUS="FAIL"
+          fi
+
+          TAGS="${ADMIN_TAG_1} ${ADMIN_TAG_2}"
+
+          {
+            echo "## Load Test Analysis (${PLATFORM})"
+            echo ""
+            echo "- Profile: ${LOAD_PROFILE}"
+            echo "- Status: ${STATUS}"
+            echo "- Requests: ${REQS}"
+            echo "- Error rate: ${ERROR_RATE}"
+            echo "- p95 latency (ms): ${P95}"
+            echo "- p99 latency (ms): ${P99}"
+            echo "- Runtime (ms): ${DURATION}"
+            echo "- Admin tags: ${TAGS}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -n "${ADMIN_FEEDBACK_WEBHOOK_URL}" ]; then
+            MSG="[${PLATFORM}] ${LOAD_PROFILE} load test ${STATUS} | reqs=${REQS} err=${ERROR_RATE} p95=${P95}ms p99=${P99}ms | ${TAGS}"
+            curl -sS -X POST "${ADMIN_FEEDBACK_WEBHOOK_URL}" \
+              -H "Content-Type: application/json" \
+              -d "{\"text\":\"${MSG}\"}" >/dev/null || true
+          fi
+
+      - name: Upload summary artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-load-test-summary-${{ matrix.platform }}
+          path: load-test-summary.json

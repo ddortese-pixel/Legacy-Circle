@@ -10,7 +10,7 @@ function getMilestonePost(milestone: number, platform: string, totalUsers: numbe
   const url = isLC
     ? "https://the-legacy-circle-59ad81c4.base44.app/LCSplashScreen"
     : "https://our-space-vibes.base44.app";
-  const webUrl = isLC ? "https://legacycirclewebpage.base44.app" : "";
+  const webUrl = isLC ? "https://legacycirclewwebsite.base44.app" : "";
 
   const posts: Record<number, string> = {
     100: isLC
