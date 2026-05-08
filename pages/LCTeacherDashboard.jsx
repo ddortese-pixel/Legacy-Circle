@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { LearnerProfile, StoryProgress, MasteryQuiz } from "@/api/entities";
 import { usePageMeta } from "./usePageMeta";
+import { MATERIAL_INGESTION_URL } from "../functionUrls";
+import dashboardTabs from "./config/teacherDashboardTabs.json";
 
 const T = { bg: "#0e1020", card: "#1a1e35", border: "#2a2f50", gold: "#ffc400", text: "#e8eaf6", muted: "#9ea3c0" };
 
@@ -22,6 +24,19 @@ const STANDARDS = [
   "Dig Cit 6.3 — Digital Ethics & Bias",
 ];
 
+const TAB_LAYOUT = Array.isArray(dashboardTabs?.tabs) && dashboardTabs.tabs.length
+  ? dashboardTabs.tabs
+  : [
+      { id: "overview", label: "Overview" },
+      { id: "standards", label: "Standards" },
+      { id: "roster", label: "Roster" },
+      { id: "material_ingestion", label: "Material Ingestion", accept: [".epub", ".pdf", ".png", ".docx", ".txt"] },
+    ];
+const MATERIAL_INGESTION_TAB = TAB_LAYOUT.find(tab => tab.id === "material_ingestion");
+const MATERIAL_ACCEPT_ATTR = Array.isArray(MATERIAL_INGESTION_TAB?.accept)
+  ? MATERIAL_INGESTION_TAB.accept.join(",")
+  : ".epub,.pdf,.png,.docx,.txt";
+
 export default function LCTeacherDashboard() {
   const [pin, setPin]             = useState("");
   const [authed, setAuthed]       = useState(false);
@@ -33,6 +48,10 @@ export default function LCTeacherDashboard() {
   const [selected, setSelected]   = useState(null);
   const [tab, setTab]             = useState("overview");
   const [search, setSearch]       = useState("");
+  const [materialFile, setMaterialFile] = useState(null);
+  const [ingestBusy, setIngestBusy] = useState(false);
+  const [ingestError, setIngestError] = useState("");
+  const [ingestResult, setIngestResult] = useState(null);
 
   usePageMeta({
     title: "Teacher Dashboard · The Legacy Circle",
@@ -102,6 +121,48 @@ export default function LCTeacherDashboard() {
 
   function getStudentQuizzes(studentId) {
     return quizzes.filter(q => q.learner_profile_id === studentId);
+  }
+
+  async function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const value = String(reader.result || "");
+        const base64 = value.includes(",") ? value.split(",")[1] : value;
+        resolve(base64);
+      };
+      reader.onerror = () => reject(new Error("Failed to read selected file."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function submitMaterialIngestion() {
+    if (!materialFile || ingestBusy) return;
+    setIngestError("");
+    setIngestResult(null);
+    setIngestBusy(true);
+
+    try {
+      const fileBase64 = await toBase64(materialFile);
+      const response = await fetch(MATERIAL_INGESTION_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          file_name: materialFile.name,
+          mime_type: materialFile.type || "application/octet-stream",
+          file_base64: fileBase64,
+        }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.error || "Material ingestion failed.");
+      }
+      setIngestResult(payload);
+    } catch (e) {
+      setIngestError(e.message || "Material ingestion failed.");
+    }
+
+    setIngestBusy(false);
   }
 
   // PIN gate
@@ -253,13 +314,13 @@ export default function LCTeacherDashboard() {
             <div style={{ fontSize: 20, fontWeight: 900, color: T.gold }}>The Legacy Circle</div>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
-            {["overview","standards","roster"].map(t => (
-              <button key={t} onClick={() => setTab(t)} style={{
-                background: tab === t ? T.gold : T.card,
-                color: tab === t ? "#0e1020" : T.muted,
-                border: `1px solid ${tab === t ? T.gold : T.border}`,
-                borderRadius: 99, padding: "6px 14px", cursor: "pointer", fontSize: 12, fontWeight: 700, textTransform: "capitalize",
-              }}>{t}</button>
+            {TAB_LAYOUT.map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)} style={{
+                background: tab === t.id ? T.gold : T.card,
+                color: tab === t.id ? "#0e1020" : T.muted,
+                border: `1px solid ${tab === t.id ? T.gold : T.border}`,
+                borderRadius: 99, padding: "6px 14px", cursor: "pointer", fontSize: 12, fontWeight: 700,
+              }}>{t.label || t.id}</button>
             ))}
           </div>
         </div>
@@ -404,6 +465,56 @@ export default function LCTeacherDashboard() {
               }
             </div>
           </>
+        )}
+
+        {!loading && tab === "material_ingestion" && (
+          <div style={{ background: T.card, borderRadius: 16, padding: "18px", border: `1px solid ${T.border}` }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: T.gold, marginBottom: 6 }}>Material Ingestion</div>
+            <div style={{ fontSize: 12, color: T.muted, marginBottom: 14 }}>
+              Upload source files for platform-wide ingestion. Supported types: {MATERIAL_ACCEPT_ATTR}.
+            </div>
+
+            <input
+              type="file"
+              accept={MATERIAL_ACCEPT_ATTR}
+              onChange={(e) => {
+                setIngestError("");
+                setIngestResult(null);
+                setMaterialFile(e.target.files?.[0] || null);
+              }}
+              style={{ width: "100%", background: "#0e1020", border: `1px solid ${T.border}`, borderRadius: 10, padding: "10px 12px", color: T.text, marginBottom: 12 }}
+            />
+
+            <button
+              onClick={submitMaterialIngestion}
+              disabled={!materialFile || ingestBusy}
+              style={{
+                background: !materialFile || ingestBusy ? "#3a3f62" : T.gold,
+                color: !materialFile || ingestBusy ? T.muted : "#0e1020",
+                border: "none",
+                borderRadius: 10,
+                padding: "10px 16px",
+                fontSize: 13,
+                fontWeight: 800,
+                cursor: !materialFile || ingestBusy ? "not-allowed" : "pointer",
+              }}
+            >
+              {ingestBusy ? "Ingesting…" : "Start Ingestion"}
+            </button>
+
+            {ingestError && (
+              <div style={{ marginTop: 12, background: "#2a0a0a", border: "1px solid #ef444440", borderRadius: 10, padding: "10px", color: "#ef4444", fontSize: 12 }}>
+                {ingestError}
+              </div>
+            )}
+
+            {ingestResult && (
+              <div style={{ marginTop: 12, background: "#0e1020", border: `1px solid ${T.border}`, borderRadius: 10, padding: "10px 12px", fontSize: 12, color: T.muted }}>
+                <div>✅ Source ID: <strong style={{ color: T.gold }}>{ingestResult.source_id}</strong></div>
+                <div>Story: {ingestResult.story_id || "n/a"} · Quiz: {ingestResult.mastery_quiz_id || "n/a"}</div>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>

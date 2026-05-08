@@ -16,6 +16,9 @@
     "story_id": {
       "type": "string"
     },
+    "source_id": {
+      "type": "string"
+    },
     "score": {
       "type": "number"
     },
@@ -33,6 +36,12 @@
     },
     "attempts": {
       "type": "number"
+    },
+    "quiz_payload": {
+      "type": "object"
+    },
+    "quiz_generation_model": {
+      "type": "string"
     }
   },
   "required": [],

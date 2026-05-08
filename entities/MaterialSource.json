@@ -1,0 +1,98 @@
+{
+  "type": "object",
+  "properties": {
+    "source_id": {
+      "type": "string"
+    },
+    "file_name": {
+      "type": "string"
+    },
+    "mime_type": {
+      "type": "string"
+    },
+    "file_extension": {
+      "type": "string",
+      "enum": [
+        ".epub",
+        ".pdf",
+        ".png",
+        ".docx",
+        ".txt"
+      ]
+    },
+    "file_size_bytes": {
+      "type": "number"
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "ingestion_status": {
+      "type": "string",
+      "enum": [
+        "received",
+        "processing",
+        "complete",
+        "failed"
+      ]
+    },
+    "ingestion_stage": {
+      "type": "string"
+    },
+    "extraction_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "complete",
+        "failed"
+      ]
+    },
+    "author": {
+      "type": "string"
+    },
+    "chapter_metadata": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "extraction_metadata": {
+      "type": "object"
+    },
+    "extracted_text_excerpt": {
+      "type": "string"
+    },
+    "extracted_char_count": {
+      "type": "number"
+    },
+    "knowledge_chunk_count": {
+      "type": "number"
+    },
+    "story_id": {
+      "type": "string"
+    },
+    "mastery_quiz_id": {
+      "type": "string"
+    },
+    "tutor_knowledge_chunk_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "checkpoint_log": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "ingest_started_at": {
+      "type": "string"
+    },
+    "completed_at": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "MaterialSource"
+}
