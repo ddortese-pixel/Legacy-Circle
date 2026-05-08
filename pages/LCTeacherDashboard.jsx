@@ -317,13 +317,13 @@ export default function LCTeacherDashboard() {
             <div style={{ fontSize: 11, color: T.muted, letterSpacing: 1, textTransform: "uppercase" }}>🏫 Teacher Dashboard</div>
             <div style={{ fontSize: 20, fontWeight: 900, color: T.gold }}>The Legacy Circle</div>
           </div>
-          <div style={{ display: "flex", gap: 10 }}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
             {TAB_LAYOUT.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)} style={{
                 background: tab === t.id ? T.gold : T.card,
                 color: tab === t.id ? "#0e1020" : T.muted,
                 border: `1px solid ${tab === t.id ? T.gold : T.border}`,
-                borderRadius: 99, padding: "6px 14px", cursor: "pointer", fontSize: 12, fontWeight: 700, textTransform: "capitalize",
+                borderRadius: 99, padding: "6px 14px", cursor: "pointer", fontSize: 12, fontWeight: 700, textTransform: "capitalize", whiteSpace: "nowrap",
               }}>{t.label || t.id}</button>
             ))}
           </div>
