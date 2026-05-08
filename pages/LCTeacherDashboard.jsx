@@ -36,6 +36,10 @@ const MATERIAL_INGESTION_TAB = TAB_LAYOUT.find(tab => tab.id === "material_inges
 const MATERIAL_ACCEPT_ATTR = Array.isArray(MATERIAL_INGESTION_TAB?.accept)
   ? MATERIAL_INGESTION_TAB.accept.join(",")
   : ".epub,.pdf,.png,.docx,.txt";
+const MATERIAL_ACCEPT_LABEL = MATERIAL_ACCEPT_ATTR
+  .split(",")
+  .map(part => part.trim().replace(".", "").toUpperCase())
+  .join(", ");
 
 export default function LCTeacherDashboard() {
   const [pin, setPin]             = useState("");
@@ -319,7 +323,7 @@ export default function LCTeacherDashboard() {
                 background: tab === t.id ? T.gold : T.card,
                 color: tab === t.id ? "#0e1020" : T.muted,
                 border: `1px solid ${tab === t.id ? T.gold : T.border}`,
-                borderRadius: 99, padding: "6px 14px", cursor: "pointer", fontSize: 12, fontWeight: 700,
+                borderRadius: 99, padding: "6px 14px", cursor: "pointer", fontSize: 12, fontWeight: 700, textTransform: "capitalize",
               }}>{t.label || t.id}</button>
             ))}
           </div>
@@ -471,7 +475,7 @@ export default function LCTeacherDashboard() {
           <div style={{ background: T.card, borderRadius: 16, padding: "18px", border: `1px solid ${T.border}` }}>
             <div style={{ fontSize: 14, fontWeight: 800, color: T.gold, marginBottom: 6 }}>Material Ingestion</div>
             <div style={{ fontSize: 12, color: T.muted, marginBottom: 14 }}>
-              Upload source files for platform-wide ingestion. Supported types: {MATERIAL_ACCEPT_ATTR}.
+              Upload source files for platform-wide ingestion. Supported types: {MATERIAL_ACCEPT_LABEL}.
             </div>
 
             <input

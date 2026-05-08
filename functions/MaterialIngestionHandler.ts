@@ -102,12 +102,13 @@ function buildFallbackQuiz(rawText: string) {
     "The content encourages reflection and practical application.",
     "The structure progresses from context to understanding.",
   ];
+  const sourceLines = sections.length ? sections : defaults;
 
   const questions = Array.from({ length: 5 }).map((_, i) => {
-    const answer = sections[i] || defaults[i];
-    const distractorA = sections[(i + 1) % Math.max(sections.length, 1)] || defaults[(i + 1) % defaults.length];
-    const distractorB = sections[(i + 2) % Math.max(sections.length, 1)] || defaults[(i + 2) % defaults.length];
-    const distractorC = sections[(i + 3) % Math.max(sections.length, 1)] || defaults[(i + 3) % defaults.length];
+    const answer = sourceLines[i % sourceLines.length] || defaults[i];
+    const distractorA = sourceLines[(i + 1) % sourceLines.length] || defaults[(i + 1) % defaults.length];
+    const distractorB = sourceLines[(i + 2) % sourceLines.length] || defaults[(i + 2) % defaults.length];
+    const distractorC = sourceLines[(i + 3) % sourceLines.length] || defaults[(i + 3) % defaults.length];
 
     return {
       question: `Question ${i + 1}: Which statement best matches the source material?`,
