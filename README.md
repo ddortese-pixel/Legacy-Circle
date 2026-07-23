@@ -85,6 +85,8 @@ entities/
   LearnerProfile.json      # Core user/child profile + gamification state
   StoryProgress.json       # Story completion + choices per learner
   MasteryQuiz.json         # Quiz scores and competency mastery
+  MaterialSource.json      # Source ingestion tracking + extraction checkpoints
+  TutorKnowledgeChunk.json # Chunked tutor knowledge linked to source_id
   GlowMessage.json         # Peer encouragement messages (moderated)
   WeeklyChallenge.json     # Weekly XP multiplier challenges
   DailyMission.json        # Daily mission assignments
@@ -107,6 +109,7 @@ functions/
   trackSponsorClick.ts        # Tracks sponsor CTA click events
   createSponsorPlacement.ts   # Creates sponsor campaign entries
   createMarketplaceProduct.ts # Creates marketplace products (Google Books validation for digital books)
+  MaterialIngestionHandler.ts # Dedicated admin ingestion pipeline (.epub/.pdf/.png/.docx/.txt)
   getActivityFeed.ts          # Unified activity feed endpoint
   togglePostLike.ts           # Like/unlike interaction endpoint
   sendParentVerification.ts   # Sends COPPA parental consent email
@@ -159,7 +162,7 @@ The app uses `localStorage` with `lc_` prefix for all session state:
 - **Legacy Levels 1–10** — milestone thresholds unlock new content
 - **Streak System** — daily login maintains and extends streaks
 - **Badges** — unlocked by completing specific competency milestones
-- **Marketplace** — spend XP on frames, emoji sets, and cosmetics
+- **Marketplace** — metadata-only catalog for pricing/display of frames, emoji sets, and cosmetics
 - **Weekly Challenges** — XP multiplier bonus for completing all tasks
 
 ---

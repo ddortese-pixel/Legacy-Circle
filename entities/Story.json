@@ -10,6 +10,9 @@
     "author_avatar": {
       "type": "string"
     },
+    "source_id": {
+      "type": "string"
+    },
     "media_url": {
       "type": "string"
     },

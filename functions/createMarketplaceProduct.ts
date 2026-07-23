@@ -33,9 +33,22 @@ Deno.serve(async (req) => {
     const price = Number(body.price_usd || 0);
     let fileUrl = cleanText(body.file_url);
     let previewUrl = cleanText(body.preview_url);
+    const hasContentPayload = Boolean(
+      body.file_base64 || body.raw_text || body.extracted_text || body.ocr_text || body.epub_text
+    );
 
     if (!title) {
       return Response.json({ ok: false, error: "title is required" }, { status: 400, headers: CORS_HEADERS });
+    }
+
+    if (hasContentPayload) {
+      return Response.json(
+        {
+          ok: false,
+          error: "StoreProduct is metadata-only. Use Material Ingestion for platform content ingestion.",
+        },
+        { status: 400, headers: CORS_HEADERS }
+      );
     }
 
     // Book products must use explicit Google Books URLs.

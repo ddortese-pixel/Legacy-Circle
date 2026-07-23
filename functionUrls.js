@@ -14,6 +14,7 @@ export const GET_PUBLIC_DISCOVER_URL = getFunctionUrl("getPublicDiscover");
 export const GET_ACTIVITY_FEED_URL = getFunctionUrl("getActivityFeed");
 export const TOGGLE_POST_LIKE_URL = getFunctionUrl("togglePostLike");
 export const CREATE_MARKETPLACE_PRODUCT_URL = getFunctionUrl("createMarketplaceProduct");
+export const MATERIAL_INGESTION_URL = getFunctionUrl("materialIngestionHandler");
 export const SEED_OURSPACE_URL = getFunctionUrl("seedOurSpace");
 export const GET_SPONSORS_URL = getFunctionUrl("getSponsors");
 export const TRACK_SPONSOR_CLICK_URL = getFunctionUrl("trackSponsorClick");

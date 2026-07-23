@@ -1,0 +1,28 @@
+{
+  "tabs": [
+    {
+      "id": "overview",
+      "label": "Overview"
+    },
+    {
+      "id": "standards",
+      "label": "Standards"
+    },
+    {
+      "id": "roster",
+      "label": "Roster"
+    },
+    {
+      "id": "material_ingestion",
+      "label": "Material Ingestion",
+      "accept": [
+        ".epub",
+        ".pdf",
+        ".png",
+        ".docx",
+        ".txt"
+      ],
+      "handler": "materialIngestionHandler"
+    }
+  ]
+}
