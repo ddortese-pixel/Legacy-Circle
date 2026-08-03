@@ -66,7 +66,7 @@ export async function generateAudioNarration(text: string): Promise<Uint8Array |
     });
 
     const buffer = new Uint8Array(await audioBlob.arrayBuffer());
-    console.log("[Narration] ✅ Generated ${buffer.length} byte audio");
+    console.log("[Narration] ✅ Generated", buffer.length, "byte audio");
     return buffer;
   } catch (error) {
     console.error("[Narration] Error:", (error as Error).message);
