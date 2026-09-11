@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "properties": {
+    "content_id": {
+      "type": "string"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": ["text", "image", "video", "comment"]
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_role": {
+      "type": "string",
+      "enum": ["learner", "teacher", "parent", "admin"]
+    },
+    "safe": {
+      "type": "boolean"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "checked_at": {
+      "type": "string"
+    },
+    "reviewed_at": {
+      "type": "string"
+    },
+    "reviewer_id": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "ContentModerationLog"
+}

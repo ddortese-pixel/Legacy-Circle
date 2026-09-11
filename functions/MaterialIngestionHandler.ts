@@ -12,11 +12,6 @@ const MAX_EXTRACTED_CHARS = 180_000;
 const CHUNK_SIZE = 1_600;
 const MAX_CHUNKS = 80;
 
-// HuggingFace configuration
-const HF_API_TOKEN = Deno.env.get("HF_API_TOKEN") || "";
-const HF_INFERENCE_ENDPOINT = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2";
-const EMBEDDING_ENABLED = Boolean(HF_API_TOKEN);
-
 function clean(value: unknown) {
   return String(value || "").trim();
 }
@@ -49,9 +44,8 @@ function extractLooseBinaryText(bytes: Uint8Array) {
   return sanitizeText(decoded.replace(/[^\x09\x0A\x0D\x20-\x7E\u00A0-\u024F]/g, " "));
 }
 
-// More accurate token estimation: ~1 token per 4.5 chars for English text
 function tokenizeEstimate(text: string) {
-  return Math.ceil(text.length / 4.5);
+  return Math.ceil(text.length / 4);
 }
 
 function chunkText(text: string) {
@@ -95,7 +89,7 @@ type ExtractedMaterial = {
 function buildFallbackQuiz(rawText: string) {
   const normalized = sanitizeText(rawText);
   const sections = normalized
-    .split(/(?<=[.!?])\s+/)
+    .split(/((?<=[.!?])\s+/)
     .map((s) => s.trim())
     .filter(Boolean)
     .slice(0, 12);
@@ -131,128 +125,38 @@ function buildFallbackQuiz(rawText: string) {
 }
 
 async function generateQuiz(base44: any, rawText: string) {
-  // Explicit system + user message structure for better LLM consistency
-  const systemPrompt = `You are an expert educational assessment designer. Your task is to generate exactly 5 multiple-choice questions that test comprehension of the provided source material.
-
-For each question:
-1. Create a clear, focused question about the content
-2. Provide exactly 4 options (the first must be the correct answer)
-3. Set correct_option_index to 0
-4. Write a detailed explanation of why the answer is correct and why others are incorrect
-
-Output ONLY valid JSON with NO additional text or markdown. The JSON must follow this exact schema:
-{
-  "questions": [
-    {
-      "question": "Question text here",
-      "options": ["correct answer", "distractor 1", "distractor 2", "distractor 3"],
-      "correct_option_index": 0,
-      "explanation": "Detailed explanation here"
-    }
-  ]
-}`;
-
-  const userPrompt = `Generate exactly 5 multiple-choice questions from this source material. Return ONLY the JSON.
-
-Material excerpt:
-${rawText.slice(0, 10000)}`;
+  const prompt = `You are generating a mastery quiz. Return JSON only with this schema: {"questions":[{"question":"","options":["","","",""],"correct_option_index":0,"explanation":""}]}. Exactly 5 multiple-choice questions. Each question requires 4 options and a rationale explanation. Source material:\n${rawText.slice(0, 12000)}`;
 
   const integrations = (base44 as any)?.integrations;
 
   try {
-    if (integrations?.openai?.chat?.completions?.create) {
-      console.log("[Quiz] Attempting OpenAI Chat Completions");
-      const response = await integrations.openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
+    if (integrations?.openai?.responses?.create) {
+      const response = await integrations.openai.responses.create({
+        model: "gpt-4.1-mini",
+        input: prompt,
       });
-      const content = response?.choices?.[0]?.message?.content || "";
-      const parsed = parseJsonFromString(String(content));
-      if (parsed?.questions && Array.isArray(parsed.questions) && parsed.questions.length === 5) {
-        console.log("[Quiz] ✅ Generated 5 questions via OpenAI Chat Completions");
-        return { model: "openai.chat.completions", ...parsed };
-      } else {
-        console.warn("[Quiz] OpenAI Chat returned invalid format:", parsed?.questions?.length || "no questions");
-      }
+      const parsed = parseJsonFromString(String(response?.output_text || ""));
+      if (parsed?.questions?.length === 5) return { model: "openai.responses", ...parsed };
     }
-  } catch (e) {
-    console.warn("[Quiz] OpenAI Chat Completions error:", (e as Error).message);
+  } catch {
+    // fallback below
   }
 
   try {
-    if (integrations?.openai?.responses?.create) {
-      console.log("[Quiz] Attempting OpenAI Responses (legacy)");
-      const response = await integrations.openai.responses.create({
-        model: "gpt-4-mini",
-        input: userPrompt,
+    if (integrations?.openai?.chat?.completions?.create) {
+      const response = await integrations.openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
       });
-      const parsed = parseJsonFromString(String(response?.output_text || ""));
-      if (parsed?.questions && Array.isArray(parsed.questions) && parsed.questions.length === 5) {
-        console.log("[Quiz] ✅ Generated 5 questions via OpenAI Responses");
-        return { model: "openai.responses", ...parsed };
-      } else {
-        console.warn("[Quiz] OpenAI Responses returned invalid format");
-      }
+      const content = response?.choices?.[0]?.message?.content || "";
+      const parsed = parseJsonFromString(String(content));
+      if (parsed?.questions?.length === 5) return { model: "openai.chat.completions", ...parsed };
     }
-  } catch (e) {
-    console.warn("[Quiz] OpenAI Responses error:", (e as Error).message);
+  } catch {
+    // fallback below
   }
 
-  console.log("[Quiz] ℹ️ Falling back to template-based quiz generator");
   return buildFallbackQuiz(rawText);
-}
-
-async function generateEmbeddings(chunkText: string, retries = 3): Promise<number[] | null> {
-  if (!EMBEDDING_ENABLED) {
-    return null;
-  }
-
-  for (let attempt = 0; attempt < retries; attempt++) {
-    try {
-      const response = await fetch(HF_INFERENCE_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${HF_API_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: chunkText.slice(0, 512), // Limit input to first 512 chars for embedding
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.warn(`[Embedding] Attempt ${attempt + 1}/${retries} failed: ${response.status}`);
-        if (attempt < retries - 1) {
-          // Exponential backoff: 1s, 2s, 4s
-          await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, attempt)));
-          continue;
-        }
-        return null;
-      }
-
-      const data = await response.json();
-      // HF API returns array of arrays
-      if (Array.isArray(data) && data[0] && Array.isArray(data[0])) {
-        console.log(`[Embedding] ✅ Generated ${data[0].length}-dim vector`);
-        return data[0];
-      }
-
-      console.warn("[Embedding] Unexpected response format from HF API");
-      return null;
-    } catch (e) {
-      console.warn(`[Embedding] Attempt ${attempt + 1}/${retries} error:`, (e as Error).message);
-      if (attempt < retries - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, attempt)));
-      }
-    }
-  }
-
-  console.warn("[Embedding] All retry attempts exhausted, returning null");
-  return null;
 }
 
 function extractEpubMetadata(decoded: string) {
@@ -290,7 +194,7 @@ async function extractMaterial(body: any, extension: string, bytes: Uint8Array):
 
   if (extension === ".png") {
     if (!extractedTextFromRequest) {
-      throw new Error("PNG files require OCR text extraction. Provide 'ocr_text' or 'extracted_text' field in request body with the OCR-extracted text content.");
+      throw new Error("OCR text missing. Provide ocr_text or extracted_text for .png ingestion.");
     }
     return { raw_text: extractedTextFromRequest, chapters: [], metadata: { parser: "ocr-adapter" } };
   }
@@ -316,7 +220,7 @@ async function extractMaterial(body: any, extension: string, bytes: Uint8Array):
     const fallbackText = extractLooseBinaryText(bytes);
     const text = extractedTextFromRequest || fallbackText;
     if (!text || text.length < 50) {
-      throw new Error(`Unable to extract meaningful text from ${extension}. Provide 'extracted_text' field from a parser adapter (e.g., PyPDF2, python-docx, or Cloud Document AI).`);
+      throw new Error(`Unable to extract meaningful text from ${extension}. Provide extracted_text from a parser adapter.`);
     }
     return {
       raw_text: text,
@@ -338,11 +242,7 @@ Deno.serve(async (req) => {
   }
 
   const checkpoints: Array<{ stage: string; at: string; note: string }> = [];
-  const stage = (name: string, note: string) => {
-    const entry = { stage: name, note, at: new Date().toISOString() };
-    checkpoints.push(entry);
-    console.log(`[Checkpoint] ${name}: ${note}`);
-  };
+  const stage = (name: string, note: string) => checkpoints.push({ stage: name, note, at: new Date().toISOString() });
   let sourceRecordId = "";
   let base44Client: any = null;
 
@@ -351,8 +251,6 @@ Deno.serve(async (req) => {
     const fileName = clean(body.file_name || body.filename);
     const extension = getExtension(fileName);
     const mimeType = clean(body.mime_type || body.content_type) || "application/octet-stream";
-
-    console.log(`[Ingestion] Starting: ${fileName} (${extension})`);
 
     if (!fileName || !ALLOWED_EXTENSIONS.has(extension)) {
       return Response.json(
@@ -373,7 +271,7 @@ Deno.serve(async (req) => {
     base44Client = base44;
     const sourceId = clean(body.source_id) || crypto.randomUUID();
 
-    stage("received", `Accepted ${extension} upload (${bytes.length} bytes)`);
+    stage("received", `Accepted ${extension} upload`);
     const source = await base44.asServiceRole.entities.MaterialSource.create({
       source_id: sourceId,
       file_name: fileName,
@@ -421,24 +319,19 @@ Deno.serve(async (req) => {
     });
 
     const knowledgeChunkIds: string[] = [];
-    let embeddingSuccessCount = 0;
     for (const chunk of chunks) {
-      const embedding = await generateEmbeddings(chunk.chunk_text);
       const created = await base44.asServiceRole.entities.TutorKnowledgeChunk.create({
         source_id: sourceId,
         material_source_id: source.id,
         chunk_index: chunk.chunk_index,
         chunk_text: chunk.chunk_text,
         token_estimate: chunk.token_estimate,
-        embedding_model: embedding ? "sentence-transformers/all-MiniLM-L6-v2" : "pending",
-        embedding_vector: embedding || undefined,
-        embedding_status: embedding ? "complete" : "queued",
+        embedding_model: clean(body.embedding_model) || "pending",
+        embedding_status: "queued",
         chunk_status: "ready",
       });
       knowledgeChunkIds.push(created.id);
-      if (embedding) embeddingSuccessCount++;
     }
-    stage("knowledge_complete", `Completed: ${embeddingSuccessCount}/${chunks.length} embeddings generated`);
 
     stage("quiz", "Generating 5-question assessment");
     await setSource({ ingestion_stage: "quiz" });
@@ -483,8 +376,6 @@ Deno.serve(async (req) => {
       checkpoint_log: checkpoints,
     });
 
-    console.log(`[Ingestion] ✅ Complete: ${sourceId} (${chunks.length} chunks, ${embeddingSuccessCount} embeddings)`);
-
     return Response.json({
       ok: true,
       status: "complete",
@@ -499,17 +390,10 @@ Deno.serve(async (req) => {
         extracted_char_count: trimmedText.length,
         chapter_count: extracted.chapters.length,
       },
-      embedding_stats: {
-        enabled: EMBEDDING_ENABLED,
-        total_chunks: chunks.length,
-        embedded_chunks: embeddingSuccessCount,
-        embedding_model: "sentence-transformers/all-MiniLM-L6-v2",
-      },
       checkpoints,
     }, { headers: CORS_HEADERS });
   } catch (error) {
     stage("failed", "Ingestion pipeline failed");
-    console.error("[Ingestion] ❌ Error:", (error as Error).message);
     if (base44Client && sourceRecordId) {
       try {
         await base44Client.asServiceRole.entities.MaterialSource.update(sourceRecordId, {

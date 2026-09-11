@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "properties": {
+    "report_date": {
+      "type": "string"
+    },
+    "report_type": {
+      "type": "string",
+      "enum": ["daily", "weekly", "monthly"]
+    },
+    "total_users": {
+      "type": "number"
+    },
+    "active_users_24h": {
+      "type": "number"
+    },
+    "active_users_7d": {
+      "type": "number"
+    },
+    "engagement_rate": {
+      "type": "number"
+    },
+    "retention_rate": {
+      "type": "number"
+    },
+    "churn_rate": {
+      "type": "number"
+    },
+    "total_xp_earned": {
+      "type": "number"
+    },
+    "quizzes_completed": {
+      "type": "number"
+    },
+    "new_users": {
+      "type": "number"
+    },
+    "data": {
+      "type": "object"
+    },
+    "generated_at": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "AnalyticsReport"
+}

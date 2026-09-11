@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "properties": {
+    "school_id": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string",
+      "enum": ["google_classroom", "canvas", "clever"]
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "encrypted_token": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean"
+    },
+    "connected_at": {
+      "type": "string"
+    },
+    "disconnected_at": {
+      "type": "string"
+    },
+    "last_sync_at": {
+      "type": "string"
+    },
+    "sync_count": {
+      "type": "number"
+    }
+  },
+  "required": [],
+  "name": "LMSIntegration"
+}
