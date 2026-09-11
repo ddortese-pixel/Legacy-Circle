@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "properties": {
+    "content_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "enum": ["FLAGGED_FOR_REVIEW", "REMOVED", "WARNED_USER", "SUSPENDED_USER"]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "resolved_at": {
+      "type": "string"
+    },
+    "admin_notes": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "ModerationAlert"
+}
