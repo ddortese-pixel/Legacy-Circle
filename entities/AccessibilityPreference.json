@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_id": {
+      "type": "string"
+    },
+    "text_size_percent": {
+      "type": "number"
+    },
+    "high_contrast_enabled": {
+      "type": "boolean"
+    },
+    "dyslexia_font_enabled": {
+      "type": "boolean"
+    },
+    "screen_reader_enabled": {
+      "type": "boolean"
+    },
+    "reduce_motion_enabled": {
+      "type": "boolean"
+    },
+    "captions_enabled": {
+      "type": "boolean"
+    },
+    "language": {
+      "type": "string"
+    },
+    "text_to_speech_enabled": {
+      "type": "boolean"
+    },
+    "keyboard_navigation_enabled": {
+      "type": "boolean"
+    },
+    "color_blind_mode": {
+      "type": "string",
+      "enum": ["none", "protanopia", "deuteranopia", "tritanopia"]
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "AccessibilityPreference"
+}
