@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "learner_id": {
+      "type": "string"
+    },
+    "content_id": {
+      "type": "string"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": ["story", "quiz", "material", "mission"]
+    },
+    "action": {
+      "type": "string",
+      "enum": ["download", "sync", "delete"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["queued", "downloading", "complete", "failed"]
+    },
+    "file_size_bytes": {
+      "type": "number"
+    },
+    "expires_at": {
+      "type": "string"
+    },
+    "last_synced_at": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "OfflineCache"
+}
